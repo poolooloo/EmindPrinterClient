@@ -1,12 +1,13 @@
 TEMPLATE = app
 
-QT += qml quick network widgets
+QT += qml quick network widgets printsupport
 CONFIG += c++11
 
 SOURCES += main.cpp \
     licensefactory.cpp \
     client.cpp \
-    cupsbackend.cpp
+    cupsbackend.cpp \
+    printer.cpp
 
 RESOURCES += qml.qrc
 
@@ -23,4 +24,5 @@ DISTFILES +=
 HEADERS += \
     licensefactory.h \
     client.h \
-    cupsbackend.h
+    cupsbackend.h \
+    printer.h

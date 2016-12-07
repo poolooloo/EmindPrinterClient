@@ -95,7 +95,10 @@ void Client::displayError(QAbstractSocket::SocketError socketErr)
 }
 
 
+void Client::printerName() const
+{
 
+}
 
 
 

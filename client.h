@@ -24,6 +24,8 @@ public:
     Q_PROPERTY(QString err READ getErr  NOTIFY errChanged)
 
     QString getErr();
+    void printerName() const;
+
 
 signals:
     void error();
