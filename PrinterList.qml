@@ -8,4 +8,20 @@ Window {
     maximumWidth: 500
     minimumWidth: 500
     visible: true
+
+
+    ListModel{
+        id:pModel
+
+    }
+
+
+
+    ListView{
+        id:pView
+    }
+
+    Component{
+        id:pDelegate
+    }
 }

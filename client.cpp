@@ -36,13 +36,13 @@ bool Client::checkLicense(QString license)
     QDataStream inData(socket);
     if(inDataSize == 0){
         if(socket->bytesAvailable()<(int)sizeof(quint16))
-            return;
+            return true;
 
         inData >> inDataSize;
     }
 
     if(socket->bytesAvailable()<inDataSize)
-        return;
+        return true;
 
 
     QString sockData;
