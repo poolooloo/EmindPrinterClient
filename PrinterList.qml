@@ -7,7 +7,6 @@ Window {
     minimumHeight: 400
     maximumWidth: 500
     minimumWidth: 500
-    visible: true
 
 
     ListModel{
@@ -19,9 +18,17 @@ Window {
 
     ListView{
         id:pView
+        model:pModel
+        delegate:pDelegate
+
     }
 
     Component{
         id:pDelegate
+        Text{
+            text:"hello"
+        }
     }
+
+
 }

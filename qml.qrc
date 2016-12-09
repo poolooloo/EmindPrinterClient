@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>PrinterList.qml</file>
+        <file>ClientLogin.qml</file>
     </qresource>
 </RCC>
