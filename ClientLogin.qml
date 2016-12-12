@@ -3,7 +3,7 @@ import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
-import com.client.emindprint 1.0
+//import com.client.emindprint 1.0
 
 
 Window {
@@ -20,7 +20,39 @@ Window {
 
     Loader { id:printer }
 
-    EmindClient{id:client}
+//    EmindClient{id:client}
+
+
+    Button {
+        objectName:"btnCancel"
+        id: btnCancel
+        x: 86
+        y: 173
+        width: 103
+        height: 36
+        style: ButtonStyle {
+            background: Rectangle{
+                radius: 5
+                border.color: "black"
+            }
+
+        }
+
+        text: qsTr("Cancel")
+
+        MouseArea{
+            anchors.fill:parent
+            onClicked:
+            {
+                Qt.quit();
+            }
+
+
+        }
+
+    }
+
+
 
     Button {
         objectName:"btnNext"
@@ -123,7 +155,7 @@ Window {
         focus: true
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        inputMask: "000.000.000.000;_"
+//        inputMask: "\\  \\  \\  .\\ \\ \\ .\\ \\ \\ .\\ \\ \\ ;_"
     }
 
     TextField {
