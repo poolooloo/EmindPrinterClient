@@ -30,9 +30,9 @@ bool CupsBackend::print( const QString &jobName, bool duplex, int numCopies) con
 //    args << "-#" << QString("%1").arg(numCopies);
 //    args << "-T" << jobName;
 //    args << "-r";
-////    if(mDuplexType == DuplexAuto && !duplex){
-////        args << "-o sides=one-sided";
-////    }
+//    if(mDuplexType == DuplexAuto && !duplex){
+//        args << "-o sides=one-sided";
+//    }
 //    QString file = QString("%1/.cache/ecp_tmp_%2-print.pdf")
 //                          .arg(QDir::homePath())
 //                          .arg(QCoreApplication::applicationPid());

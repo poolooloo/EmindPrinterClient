@@ -34,60 +34,71 @@ Window {
         model:pModel
         delegate:pDelegate
         MouseArea{
-//            onEntered: color = "red"
+            //            onEntered: color = "red"
         }
+        anchors.alignWhenCentered: true
         anchors.margins: 10
-
     }
+
+
 
     Component{
         id:pDelegate
 
         Rectangle{
             id:printerItem
-            width:printerlist.width-20
-            height:50
+            width:printerlist.width
+            height:60
+            anchors.margins: 20
             Text{
-                anchors.centerIn: parent.Center
                 id:printerName
+                anchors.alignWhenCentered : true
                 text:prName
                 font.pixelSize: 22
             }
 
+
             Button{
                 id:btnAdd
-                width:25
-                height:25
+                width:40
+                height: 40
+                anchors.alignWhenCentered : true
                 anchors.right: printerItem.right
-                anchors.rightMargin: 10
+                anchors.margins:20
                 style:ButtonStyle{
                     background: Rectangle{
-
+                        width:control.width
+                        height:control.height
+                    }
+                    label:Text{
+                        id:btnText
+                        color:control.hovered?"blue":"black"
+                        text:busyIndicator.running ? "" : "Add"
+                        font.pixelSize: 22
+//                        onHoveredLinkChanged:  color="blue"
                     }
                 }
-                text:qsTr("Add")
+                onClicked: {
+                    busyIndicator.visible = true;
+                    busyIndicator.running = true;
+                }
 
-                MouseArea{
-                    anchors.fill: btnAdd
-                    hoverEnabled: true
-//                    onHoveredChanged:  {
-//                        style:ButtonStyle{
-
-//                        };
-                    onEntered:color = "red"
-                    onExited: color = "white"
+                BusyIndicator {
+                    id:busyIndicator
+                    anchors.fill: parent
+//                    anchors.alignWhenCentered : true
+                    width:45
+                    height: 45
+                    visible: false
+                    running: false
                 }
             }
 
-            MouseArea{
-                anchors.fill:printerItem
-                onEntered: console.log("eentered")
-                onExited: console.log("eexited")
-            }
         }
-
-
     }
 
 
 }
+
+
+

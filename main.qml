@@ -20,8 +20,6 @@ ApplicationWindow {
         source:"ClientLogin.qml"
     }
 
-//    ClientLogin{
-//        id:client1
-//    }
+
 
 }

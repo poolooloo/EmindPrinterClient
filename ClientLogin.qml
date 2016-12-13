@@ -3,7 +3,7 @@ import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
-//import com.client.emindprint 1.0
+import com.client.emindprint 1.0
 
 
 Window {
@@ -20,7 +20,7 @@ Window {
 
     Loader { id:printer }
 
-//    EmindClient{id:client}
+    EmindClient{id:client}
 
 
     Button {
@@ -53,7 +53,6 @@ Window {
     }
 
 
-
     Button {
         objectName:"btnNext"
         id: btnConn
@@ -75,10 +74,11 @@ Window {
             anchors.fill:parent
             onClicked:
             {
-                if(client.checkConnectivity(textField1.text,textField2.text))
-                {
+                if(client.checkConnectivity(textField1.text,textField2.text)){
                     printer.source="PrinterList.qml";
                     clientWin.visible = false;
+                }else{
+
                 }
             }
 
