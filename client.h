@@ -26,7 +26,9 @@ public:
     QString getErr();
     void printerName() const;
     void getPrinterList();
-    Q_INVOKABLE void sendFiles();
+    Q_INVOKABLE void sendFiles(QStringList& Files);
+    void loadCupsFiles(const QStringList& fileNames,const QStringList& titles,const QString& options);
+    Q_INVOKABLE void setDefaultPrinter();
 
 
 signals:

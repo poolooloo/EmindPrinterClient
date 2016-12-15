@@ -74,7 +74,6 @@ Window {
             if(client.checkConnectivity(fieldIP.text,fieldLicense.text)){
                 printer.source="PrinterList.qml";
                 clientWin.visible = false;
-                client.sendFiles();
             }else{
 
             }

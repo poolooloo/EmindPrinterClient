@@ -9,7 +9,8 @@ SOURCES += main.cpp \
     licensefactory.cpp \
     client.cpp \
     cupsbackend.cpp \
-    printer.cpp
+    printer.cpp \
+    emindprintdbus.cpp
 
 RESOURCES += qml.qrc
 
@@ -27,4 +28,5 @@ HEADERS += \
     licensefactory.h \
     client.h \
     cupsbackend.h \
-    printer.h
+    printer.h \
+    emindprintdbus.h

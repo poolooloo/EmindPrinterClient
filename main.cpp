@@ -44,7 +44,27 @@ int main(int argc, char *argv[])
         bRet = QMetaObject::invokeMethod(txErr1,"doLayout");
     }
 
+    //to handle cups files
+    QStringList files;
+    QStringList titles;
+    QStringList args = app.arguments();
+    for(int i=1;i < args.count();++i){
+        QString arg = args.at(i);
+        if(arg == "-t" || arg == "--title"){
+            if(i+1 < args.count()){
+                titles<<args.at(i+1);
+                i++;
+                continue;
+            }else{
+                return 1;
+            }
+        }
 
+        files << args.at(i);
+    }
+    app.processEvents();
+
+//    loadCupsFiles(files,titles,"");
 
     return app.exec();
 }

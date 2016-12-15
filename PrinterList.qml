@@ -81,6 +81,7 @@ Window {
                 onClicked: {
                     busyIndicator.visible = true;
                     busyIndicator.running = true;
+                    client.setDefaultPrinter();
                 }
 
                 BusyIndicator {
