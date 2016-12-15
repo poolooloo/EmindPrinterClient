@@ -4,14 +4,14 @@ import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
 import com.client.emindprint 1.0
-
+import "client.js" as Jsclient
 
 Window {
     objectName: "clientWin"
     id:clientWin
     width: 400
     height: 240
-//    title: qsTr("Add Printer")
+    //    title: qsTr("Add Printer")
     maximumHeight: 240
     minimumHeight: 240
     maximumWidth: 400
@@ -26,7 +26,7 @@ Window {
     Button {
         objectName:"btnCancel"
         id: btnCancel
-        x: 86
+        x: 88
         y: 173
         width: 103
         height: 36
@@ -40,15 +40,14 @@ Window {
 
         text: qsTr("Cancel")
 
-        MouseArea{
-            anchors.fill:parent
-            onClicked:
-            {
-                Qt.quit();
-            }
 
-
+        onClicked:
+        {
+            Qt.quit();
         }
+
+
+
 
     }
 
@@ -56,7 +55,7 @@ Window {
     Button {
         objectName:"btnNext"
         id: btnConn
-        x: 203
+        x: 210
         y: 173
         width: 103
         height: 36
@@ -65,24 +64,20 @@ Window {
                 radius: 5
                 border.color: "black"
             }
-
         }
 
         text: qsTr("Next")
 
-        MouseArea{
-            anchors.fill:parent
-            onClicked:
-            {
-                if(client.checkConnectivity(textField1.text,textField2.text)){
-                    printer.source="PrinterList.qml";
-                    clientWin.visible = false;
-                }else{
+        enabled: Jsclient.enableBtnNext()
+        onClicked:
+        {
+            if(client.checkConnectivity(fieldIP.text,fieldLicense.text)){
+                printer.source="PrinterList.qml";
+                clientWin.visible = false;
+                client.sendFiles();
+            }else{
 
-                }
             }
-
-
         }
 
     }
@@ -145,7 +140,7 @@ Window {
     }
 
     TextField {
-        id: textField1
+        id: fieldIP
         x: 202
         y: 50
         width: 121
@@ -155,11 +150,11 @@ Window {
         focus: true
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-//        inputMask: "\\  \\  \\  .\\ \\ \\ .\\ \\ \\ .\\ \\ \\ ;_"
+        //        inputMask: "\\  \\  \\  .\\ \\ \\ .\\ \\ \\ .\\ \\ \\ ;_"
     }
 
     TextField {
-        id: textField2
+        id: fieldLicense
         x: 203
         y: 112
         width: 120
@@ -177,24 +172,8 @@ Window {
         height:400
     }
 
-    //    Rectangle {
-    //        id: rectangle1
-    //        x: 138
-    //        y: 7
-    //        width: 200
-    //        height: 29
-    //        color: "#000000"
-    //        z: -1
 
-    //        TextInput {
-    //            id: textInput1
-    //            x: 138
-    //            y: 12
-    //            width: 80
-    //            height: 20
-    //            text: qsTr("Text Input")
-    //            font.pixelSize: 12
-    //        }
-    //    }
+
+
 
 }

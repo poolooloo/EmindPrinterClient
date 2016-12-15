@@ -5,6 +5,10 @@
 #include <QMetaObject>
 #include <QVariant>
 #include <QString>
+#include "cupsbackend.h"
+#include "printer.h"
+
+
 using namespace EPT;
 
 int main(int argc, char *argv[])
@@ -12,6 +16,8 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<Client>("com.client.emindprint",1,0,"EmindClient");
+    qmlRegisterType<CupsBackend>("com.client.CupsBackend",1,0,"CupsBackend");
+    qmlRegisterType<Printer>("com.client.emindprint",1,0,"Printer");
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     QObject::connect(&engine,SIGNAL(quit()),qApp,SLOT(quit()));

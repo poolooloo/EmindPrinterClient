@@ -3,6 +3,8 @@ TEMPLATE = app
 QT += qml quick network widgets printsupport
 CONFIG += c++11
 
+LIBS += -lcups
+
 SOURCES += main.cpp \
     licensefactory.cpp \
     client.cpp \

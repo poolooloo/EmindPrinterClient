@@ -18,9 +18,9 @@ CupsBackend::CupsBackend()
     QString file = QString("%1/.cache/ecp_tmp_%2-print.pdf")
                           .arg(QDir::homePath())
                           .arg(QCoreApplication::applicationPid());
-    args << file.toLocal8Bit();
-    QProcess proc;
-    proc.startDetached("lpr",args);
+//    args << file.toLocal8Bit();
+//    QProcess proc;
+//    proc.startDetached("lpr",args);
 }
 
 bool CupsBackend::print( const QString &jobName, bool duplex, int numCopies) const

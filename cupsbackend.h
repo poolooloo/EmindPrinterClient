@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-class CupsBackend
+class CupsBackend:public QObject
 {
 public:
     CupsBackend();
