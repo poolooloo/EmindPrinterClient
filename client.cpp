@@ -4,14 +4,15 @@
 
 namespace EPT {
 
+const QString AUTH_CODE = "emind";
 const quint16 SERVER_PORT = 6666;
 
 Client::Client(QObject *parent) : QObject(parent)
 {
-    socket = new QTcpSocket(this);
-    //    connect(socket,SIGNAL(readyRead()),this,SLOT(checkConnectivity()));
-    connect(socket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(displayError(QAbstractSocket::SocketError)));
-    connect(socket,SIGNAL(bytesWritten(qint64)),this,SLOT(updateClientProgress(qint64)));
+    psocket = new QTcpSocket(this);
+    //    connect(psocket,SIGNAL(readyRead()),this,SLOT(checkConnectivity()));
+    connect(psocket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(displayError(QAbstractSocket::SocketError)));
+//    connect(psocket,SIGNAL(bytesWritten(qint64)),this,SLOT(updateClientProgress(qint64)));
     loadSize = 4*1024;
     totalBytes = 0;
     bytesWritten = 0;
@@ -27,10 +28,10 @@ bool Client::checkConnectivity(QString ip,QString license)
 {
     qDebug()<<"ip="<<ip<<endl;
     qDebug()<<__FUNCTION__<<endl;
-    socket->abort();
+    psocket->abort();
 
-    socket->connectToHost(ip,SERVER_PORT);
-    if(socket->waitForConnected(3000))
+    psocket->connectToHost(ip,SERVER_PORT);
+    if(psocket->waitForConnected(3000))
         emit errConnected();
     if(checkLicense(license))
         return true;
@@ -41,57 +42,124 @@ bool Client::checkConnectivity(QString ip,QString license)
 
 bool Client::checkLicense(QString license)
 {
-    return true;
-    QDataStream inData(socket);
-    //    while(socket->waitForReadyRead())
-    if(inDataSize == 0){
-        if(socket->bytesAvailable()<(int)sizeof(quint16))
-            return true;
-
-        inData >> inDataSize;
+    qDebug()<<__FUNCTION__<<endl;
+    sndMsg(license);
+    while(psocket->waitForReadyRead()){
+        QString rmsg = rcvMsg();
+        if(rmsg != "OK"){
+            setErr(rmsg);
+            return false;
+        }
+        sndMsg("Request printer list!");
+        while(psocket->waitForReadyRead()){
+            QString printers = rcvMsg();
+            m_plist = printers.split(",");
+            foreach (auto str, m_plist) {
+                qDebug()<<str<<endl;
+            }
+//            sendFiles(printerList);
+        }
     }
-
-    if(socket->bytesAvailable()<inDataSize)
-        return true;
-
-
-    QString sockData;
-    inData >> sockData;
-    //send license
-    socket->write(license.toLatin1());
-    //recv reply
-    char buf[16];
-    socket->readLine(buf,sizeof(buf));
-    if(buf == "ok"){
-        return true;
-    }else{
-        //license error-->reply false
-        qDebug()<<buf<<endl;
-        return false;
-    }
-    //send request of printer list
-    QByteArray request("request printer list");
-    socket->write(request);
-    //recv reply of printer list
-    QDataStream printerLists(socket);
-    printerLists << socket->readAll();
-
-    //
-    //    QFile fileToPrint("test.pdf");
-
-
     return true;
+//    return true;
+//    QDataStream inData(psocket);
+//    //    while(psocket->waitForReadyRead())
+//    if(inDataSize == 0){
+//        if(psocket->bytesAvailable()<(int)sizeof(quint16))
+//            return true;
+
+//        inData >> inDataSize;
+//    }
+
+//    if(psocket->bytesAvailable()<inDataSize)
+//        return true;
+
+
+//    QString sockData;
+//    inData >> sockData;
+//    //send license
+//    psocket->write(license.toLatin1());
+//    //recv reply
+//    char buf[16];
+//    psocket->readLine(buf,sizeof(buf));
+//    if(buf == "ok"){
+//        return true;
+//    }else{
+//        //license error-->reply false
+//        qDebug()<<buf<<endl;
+//        return false;
+//    }
+//    //send request of printer list
+//    QByteArray request("request printer list");
+//    psocket->write(request);
+//    //recv reply of printer list
+//    QDataStream printerLists(psocket);
+//    printerLists << psocket->readAll();
+
+//    //
+//    //    QFile fileToPrint("test.pdf");
+
 }
 
-
-void Client::getPrinterList()
+void Client::checkConnect()
 {
+    sndMsg(AUTH_CODE);
+    while(psocket->waitForReadyRead()){
+        QString rmsg = rcvMsg();
+        if(rmsg != "OK"){
+            return ;
+        }
+        sndMsg("Request printer list!");
+        while(psocket->waitForReadyRead()){
+            QString printers = rcvMsg();
+            QStringList printerList;
+            printerList = printers.split(",");
+            setPrinterNameList(printerList);
+//            sendFiles(printerList);
+        }
+    }
+}
 
+void Client::setPrinterNameList(const QStringList& list)
+{
+    m_plist = list;
+    emit printerNameListChanged();
+}
 
+QStringList Client::printerNameList()
+{
+    return m_plist;
+}
+
+void Client::sndMsg(QString msgStr)
+{
+    QByteArray authblock;
+    QDataStream out(&authblock,QIODevice::WriteOnly);
+    out << (quint16)0 << msgStr;
+    out.device()->seek(0);
+    out<<(quint16)(authblock.size() - sizeof(quint16));
+    psocket->write(authblock);
+    psocket->flush();
+}
+
+QString Client::rcvMsg()
+{
+    QDataStream in(psocket);
+    if(blockSize == 0 ){
+        if(psocket->bytesAvailable()<(int)sizeof(quint16)){
+            return 0;
+        }
+
+        in >> blockSize;
+    }
+
+    in >> message;
+    blockSize = 0;
+    return message;
 }
 
 
-void Client::sendFiles(QString Files)  //实现文件大小等信息的发送
+void Client::sendFiles(QStringList& Files)  //实现文件大小等信息的发送
 {
     foreach(auto fileName,Files){
 
@@ -121,7 +189,7 @@ void Client::sendFiles(QString Files)  //实现文件大小等信息的发送
         //填补
         //totalBytes是文件总大小，即两个quint64的大小+文件名+文件实际内容的大小
         //qint64((outBlock.size() - sizeof(qint64)*2))得到的是文件名大小
-        bytesToWrite = totalBytes - socket->write(outBlock);
+        bytesToWrite = totalBytes - psocket->write(outBlock);
         //发送完头数据后剩余数据的大小，即文件实际内容的大小
         outBlock.resize(0);
         qDebug()<<"#####"<<totalBytes;
@@ -137,7 +205,7 @@ void Client::sendFiles(QString Files)  //实现文件大小等信息的发送
             outBlock = localFile->read(qMin(bytesToWrite,loadSize));
             //每次发送loadSize大小的数据，这里设置为4KB，如果剩余的数据不足4KB，
             //就发送剩余数据的大小
-            bytesToWrite -= (int)socket->write(outBlock);
+            bytesToWrite -= (int)psocket->write(outBlock);
             //发送完一次数据后还剩余数据的大小
             outBlock.resize(0);
             //清空发送缓冲区
@@ -153,7 +221,7 @@ void Client::sendFiles(QString Files)  //实现文件大小等信息的发送
         {
             qDebug()<<"bytesWritten == totalBytes"<<endl;
             localFile->close();
-            socket->close();
+            psocket->close();
         }
 
     }
@@ -172,7 +240,7 @@ void Client::updateClientProgress(qint64 numBytes) //更新进度条，实现文
         outBlock = localFile->read(qMin(bytesToWrite,loadSize));
         //每次发送loadSize大小的数据，这里设置为4KB，如果剩余的数据不足4KB，
         //就发送剩余数据的大小
-        bytesToWrite -= (int)socket->write(outBlock);
+        bytesToWrite -= (int)psocket->write(outBlock);
         //发送完一次数据后还剩余数据的大小
         outBlock.resize(0);
         //清空发送缓冲区
@@ -188,12 +256,20 @@ void Client::updateClientProgress(qint64 numBytes) //更新进度条，实现文
     {
         qDebug()<<"bytesWritten == totalBytes"<<endl;
         localFile->close();
-        socket->close();
+        psocket->close();
     }
 }
 
 QString Client::getErr()
 {
+
+}
+void Client::setErr(const QString error)
+{
+    if(error != m_err){
+        m_err = error;
+        emit errChanged();
+    }
 
 }
 
@@ -202,9 +278,9 @@ void Client::update()
 
 }
 
-void Client::displayError(QAbstractSocket::SocketError socketErr)
+void Client::displayError(QAbstractSocket::SocketError psocketErr)
 {
-    switch(socketErr){
+    switch(psocketErr){
     case QAbstractSocket::HostNotFoundError:
         qDebug()<<"HostNotFoundError"<<endl;
         //        QMessageBox::information(0, tr("Error"),
@@ -217,9 +293,9 @@ void Client::displayError(QAbstractSocket::SocketError socketErr)
         //                                 tr("ConnectionRefusedError"));
         break;
     case QAbstractSocket::SocketTimeoutError:
-        qDebug()<<"SocketTimeoutError"<<endl;
+        qDebug()<<"psocketTimeoutError"<<endl;
         //        QMessageBox::information(0, tr("Error"),
-        //                                 tr("SocketTimeoutError"));
+        //                                 tr("psocketTimeoutError"));
         break;
     case QAbstractSocket::DatagramTooLargeError:
         qDebug()<<"DatagramTooLargeError"<<endl;
@@ -240,12 +316,12 @@ void Client::printerName() const
 void Client::loadCupsFiles(const QStringList& fileNames,const QStringList& titles,const QString& options)
 {
     foreach(QString fileName,fileNames){
-        sendFiles(fileName);
+//        sendFiles(fileName);
     }
 }
 
 
-void Client::setDefaultPrinter(Printer){
+void Client::setDefaultPrinter(){
 
 }
 

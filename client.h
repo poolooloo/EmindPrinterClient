@@ -3,7 +3,7 @@
 
 #include <QMessageBox>
 #include <QObject>
-#include <QLocalSocket>
+#include <QAbstractSocket>
 class QFile;
 class QTcpSocket;
 namespace EPT {
@@ -21,20 +21,27 @@ public:
     Q_ENUMS(ServerError)
 
     Q_INVOKABLE void update();
-    Q_PROPERTY(QString err READ getErr  NOTIFY errChanged)
-
+    Q_PROPERTY(QString err READ getErr WRITE setErr NOTIFY errChanged)
     QString getErr();
+    void setErr(const QString error);
+
+    Q_PROPERTY(QStringList printerNameList READ printerNameList WRITE setPrinterNameList NOTIFY printerNameListChanged)
+    QStringList printerNameList();
+    void setPrinterNameList(const QStringList&);
+
     void printerName() const;
-    void getPrinterList();
     Q_INVOKABLE void sendFiles(QStringList& Files);
     void loadCupsFiles(const QStringList& fileNames,const QStringList& titles,const QString& options);
     Q_INVOKABLE void setDefaultPrinter();
-
+    void sndMsg(QString msgStr);
+    QString rcvMsg();
+    void checkConnect();
 
 signals:
     void error();
     void errChanged();
     void errConnected();
+    void printerNameListChanged();
 
 public slots:
     bool checkConnectivity(QString ip,QString license);
@@ -44,7 +51,8 @@ public slots:
 
 
 private:
-    QTcpSocket *socket;
+    QTcpSocket *psocket;
+
     quint16 inDataSize;
 
     QFile *localFile;  //要发送的文件
@@ -53,7 +61,15 @@ private:
     qint64 bytesToWrite;   //剩余数据大小,即文件实际内容的大小
     qint64 loadSize;   //每次发送数据的大小
     QString fileName;  //保存文件路径
+
     QByteArray outBlock;  //数据缓冲区，即存放每次要发送的数据
+    quint16 blockSize;
+
+    QString message;
+
+    QString m_err;
+    QStringList m_plist;
+
 
 };
 

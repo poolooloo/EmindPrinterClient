@@ -18,6 +18,8 @@ Window {
     minimumWidth: 400
     visible:true
 
+    property variant printerNameList:client.printerNameList
+
     Loader { id:printer }
 
     EmindClient{id:client}
@@ -35,11 +37,9 @@ Window {
                 radius: 5
                 border.color: "black"
             }
-
         }
 
         text: qsTr("Cancel")
-
 
         onClicked:
         {
@@ -54,7 +54,7 @@ Window {
 
     Button {
         objectName:"btnNext"
-        id: btnConn
+        id: btnNext
         x: 210
         y: 173
         width: 103
@@ -71,11 +71,17 @@ Window {
         enabled: Jsclient.enableBtnNext()
         onClicked:
         {
+            btnNext.enabled = false;
             if(client.checkConnectivity(fieldIP.text,fieldLicense.text)){
                 printer.source="PrinterList.qml";
                 clientWin.visible = false;
-            }else{
 
+                clientWin.printerNameList = client.printerNameList;
+                Jsclient.travelList(printerNameList);
+
+            }else{
+                  errText2.text = client.err;
+                  errText2.visible = true;
             }
         }
 
@@ -126,7 +132,7 @@ Window {
 
     Text {
         objectName: "errText2"
-        id: text4
+        id: errText2
         x: 158
         y: 142
         width: 182

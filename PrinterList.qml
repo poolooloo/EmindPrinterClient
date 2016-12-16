@@ -13,17 +13,10 @@ Window {
 
     title:qsTr("Add Remote Printers")
 
+    property string printerName
     ListModel{
         id:pModel
-        ListElement{
-            prName: "oneee"
-        }
-        ListElement{
-            prName: "oneee"
-        }
-        ListElement{
-            prName: "oneee"
-        }
+
     }
 
 
