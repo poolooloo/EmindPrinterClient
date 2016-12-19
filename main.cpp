@@ -7,7 +7,9 @@
 #include <QString>
 #include "cupsbackend.h"
 #include "printer.h"
-
+#include <QQuickView>
+#include <QQmlContext>
+#include <QtQuick/QQuickItem>
 
 using namespace EPT;
 
@@ -15,6 +17,9 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
+
+
+    //client register
     qmlRegisterType<Client>("com.client.emindprint",1,0,"EmindClient");
     qmlRegisterType<CupsBackend>("com.client.CupsBackend",1,0,"CupsBackend");
     qmlRegisterType<Printer>("com.client.emindprint",1,0,"Printer");
@@ -43,6 +48,18 @@ int main(int argc, char *argv[])
         txErr1->setProperty("Text",QObject::tr("error error"));
         bRet = QMetaObject::invokeMethod(txErr1,"doLayout");
     }
+
+    //modeldata
+//    QStringList dataList;
+//    dataList.append("Item 1");
+//    dataList.append("Item 2");
+//    dataList.append("Item 3");
+//    QQuickView view;
+//    QQmlContext *ctxt = view.rootContext();
+//    ctxt->setContextProperty("pModel",QVariant::fromValue(dataList));
+//    view.setSource(QUrl("qrc:PrinterList.qml"));
+//    view.show();
+
 
     //to handle cups files
     QStringList files;

@@ -26,11 +26,9 @@ Window {
         anchors.fill:parent
         model:pModel
         delegate:pDelegate
-        MouseArea{
-            //            onEntered: color = "red"
-        }
         anchors.alignWhenCentered: true
         anchors.margins: 10
+
     }
 
 
@@ -46,7 +44,7 @@ Window {
             Text{
                 id:printerName
                 anchors.alignWhenCentered : true
-                text:prName
+                text:modelData
                 font.pixelSize: 22
             }
 

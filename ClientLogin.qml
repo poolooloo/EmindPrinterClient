@@ -72,17 +72,28 @@ Window {
         onClicked:
         {
             btnNext.enabled = false;
-            if(client.checkConnectivity(fieldIP.text,fieldLicense.text)){
-                printer.source="PrinterList.qml";
-                clientWin.visible = false;
+            if(client.checkConnectivity(fieldIP.text)){
 
-                clientWin.printerNameList = client.printerNameList;
-                Jsclient.travelList(printerNameList);
+                client.reqLicense(fieldLicense.text);
 
+                if(client.checkLicense()){
+                    printer.source="PrinterList.qml";
+                    clientWin.visible = false;
+                    client.reqPrinterList();
+                    clientWin.printerNameList = client.printerNameList;
+                    Jsclient.travelList(printerNameList);
+                    errText1.visible = false;
+                }else{
+//                    errText1.text = client.getErr;
+                    errText1.visible = true;
+                }
+
+                errText2.visible = false;
             }else{
-                  errText2.text = client.err;
-                  errText2.visible = true;
+//                errText2.text = client.err;
+                errText2.visible = true;
             }
+            btnNext.enabled = true;
         }
 
     }
@@ -116,12 +127,12 @@ Window {
 
     Text {
         objectName: "errText1"
-        id: text3
+        id: errText1
         x: 158
         y: 79
         width: 182
         height: 28
-        text: qsTr("error:conenct failed")
+        text: qsTr("Connect failed")
         visible: false
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter

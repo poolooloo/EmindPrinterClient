@@ -36,6 +36,8 @@ public:
     void sndMsg(QString msgStr);
     QString rcvMsg();
     void checkConnect();
+    Q_INVOKABLE void reqPrinterList();
+    Q_INVOKABLE void reqLicense(QString license);
 
 signals:
     void error();
@@ -44,8 +46,9 @@ signals:
     void printerNameListChanged();
 
 public slots:
-    bool checkConnectivity(QString ip,QString license);
-    bool checkLicense(QString license);
+    QStringList getPrinterNameList(QString& msg);
+    Q_INVOKABLE bool checkConnectivity(QString ip);
+    Q_INVOKABLE bool checkLicense();
     void displayError(QAbstractSocket::SocketError);
     void updateClientProgress(qint64 numBytes);
 

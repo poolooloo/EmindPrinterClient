@@ -10,7 +10,10 @@ const quint16 SERVER_PORT = 6666;
 Client::Client(QObject *parent) : QObject(parent)
 {
     psocket = new QTcpSocket(this);
-    //    connect(psocket,SIGNAL(readyRead()),this,SLOT(checkConnectivity()));
+//    connect(psocket,SIGNAL(readyRead()),this,SLOT(checkConnectivity()));
+//    connect(psocket,SIGNAL(readyRead()),this,SLOT(getPrinterNameList()));
+    connect(psocket,SIGNAL(readyRead()),this,SLOT(checkLicense()));
+
     connect(psocket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(displayError(QAbstractSocket::SocketError)));
 //    connect(psocket,SIGNAL(bytesWritten(qint64)),this,SLOT(updateClientProgress(qint64)));
     loadSize = 4*1024;
@@ -24,101 +27,52 @@ Client::~Client()
 
 }
 
-bool Client::checkConnectivity(QString ip,QString license)
+bool Client::checkConnectivity(QString ip)
 {
     qDebug()<<"ip="<<ip<<endl;
     qDebug()<<__FUNCTION__<<endl;
     psocket->abort();
 
     psocket->connectToHost(ip,SERVER_PORT);
-    if(psocket->waitForConnected(3000))
-        emit errConnected();
-    if(checkLicense(license))
-        return true;
-    else
-        return false;
+    return psocket->waitForConnected();
 
 }
 
-bool Client::checkLicense(QString license)
+void Client::reqLicense(QString license)
+{
+    sndMsg(license);
+}
+
+bool Client::checkLicense()
 {
     qDebug()<<__FUNCTION__<<endl;
-    sndMsg(license);
-    while(psocket->waitForReadyRead()){
+
+//    while(psocket->waitForReadyRead())
+    {
         QString rmsg = rcvMsg();
-        if(rmsg != "OK"){
+        qDebug()<<rmsg<<endl;
+
+        if((rmsg.length()<5)&& (rmsg == "OK")){
+            qDebug()<<"OO"<<rmsg<<endl;
+            return true;
+        }
+        else if(rmsg == "AUTH WRONG"){
+            qDebug()<<rmsg<<endl;
             setErr(rmsg);
             return false;
+        }else{
+            getPrinterNameList(rmsg);
         }
-        sndMsg("Request printer list!");
-        while(psocket->waitForReadyRead()){
-            QString printers = rcvMsg();
-            m_plist = printers.split(",");
-            foreach (auto str, m_plist) {
-                qDebug()<<str<<endl;
-            }
-//            sendFiles(printerList);
-        }
+
     }
-    return true;
-//    return true;
-//    QDataStream inData(psocket);
-//    //    while(psocket->waitForReadyRead())
-//    if(inDataSize == 0){
-//        if(psocket->bytesAvailable()<(int)sizeof(quint16))
-//            return true;
-
-//        inData >> inDataSize;
-//    }
-
-//    if(psocket->bytesAvailable()<inDataSize)
-//        return true;
-
-
-//    QString sockData;
-//    inData >> sockData;
-//    //send license
-//    psocket->write(license.toLatin1());
-//    //recv reply
-//    char buf[16];
-//    psocket->readLine(buf,sizeof(buf));
-//    if(buf == "ok"){
-//        return true;
-//    }else{
-//        //license error-->reply false
-//        qDebug()<<buf<<endl;
-//        return false;
-//    }
-//    //send request of printer list
-//    QByteArray request("request printer list");
-//    psocket->write(request);
-//    //recv reply of printer list
-//    QDataStream printerLists(psocket);
-//    printerLists << psocket->readAll();
-
-//    //
-//    //    QFile fileToPrint("test.pdf");
 
 }
 
-void Client::checkConnect()
+void Client::reqPrinterList()
 {
-    sndMsg(AUTH_CODE);
-    while(psocket->waitForReadyRead()){
-        QString rmsg = rcvMsg();
-        if(rmsg != "OK"){
-            return ;
-        }
-        sndMsg("Request printer list!");
-        while(psocket->waitForReadyRead()){
-            QString printers = rcvMsg();
-            QStringList printerList;
-            printerList = printers.split(",");
-            setPrinterNameList(printerList);
-//            sendFiles(printerList);
-        }
-    }
+    sndMsg("Request printer list!");
 }
+
 
 void Client::setPrinterNameList(const QStringList& list)
 {
@@ -128,6 +82,28 @@ void Client::setPrinterNameList(const QStringList& list)
 
 QStringList Client::printerNameList()
 {
+    return m_plist;
+}
+
+QStringList Client::getPrinterNameList(QString& rmsg)
+{
+    QString printers = rmsg;
+    qDebug()<<"printers="<<printers<<endl;
+    QStringList tmpList;
+    tmpList = printers.split(",");
+    foreach (auto str, tmpList) {
+        qDebug()<<str<<endl;
+    }
+    qDebug()<<tmpList.at(0)<<endl;
+    if(tmpList.at(0) == "PList"){
+        for(int i=1;i<tmpList.count()-1;i++) {
+            m_plist << tmpList[i];
+            qDebug()<<m_plist[i]<<endl;
+        }
+    }else{
+        qDebug()<<"no list"<<endl;
+//        reqPrinterList();
+    }
     return m_plist;
 }
 
@@ -145,6 +121,7 @@ void Client::sndMsg(QString msgStr)
 QString Client::rcvMsg()
 {
     QDataStream in(psocket);
+
     if(blockSize == 0 ){
         if(psocket->bytesAvailable()<(int)sizeof(quint16)){
             return 0;
@@ -262,7 +239,7 @@ void Client::updateClientProgress(qint64 numBytes) //更新进度条，实现文
 
 QString Client::getErr()
 {
-
+    return m_err;
 }
 void Client::setErr(const QString error)
 {
