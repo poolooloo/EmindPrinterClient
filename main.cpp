@@ -50,16 +50,16 @@ int main(int argc, char *argv[])
     }
 
     //modeldata
-//    QStringList dataList;
-//    dataList.append("Item 1");
-//    dataList.append("Item 2");
-//    dataList.append("Item 3");
-//    QQuickView view;
-//    QQmlContext *ctxt = view.rootContext();
-//    ctxt->setContextProperty("pModel",QVariant::fromValue(dataList));
-//    view.setSource(QUrl("qrc:PrinterList.qml"));
-//    view.show();
-
+    QStringList dataList;
+    dataList.append("Item 1");
+    dataList.append("Item 2");
+    dataList.append("Item 3");
+    QQmlEngine eng;
+    QStringListModel modelData;
+    QQmlContext *ctxt = new QQmlContext(eng.rootContext());
+    ctxt->setContextProperty("pModel",QVariant::fromValue(dataList));
+    QQmlComponent component(&eng,"qrc:PrinterList.qml");
+    component.create(ctxt);
 
     //to handle cups files
     QStringList files;

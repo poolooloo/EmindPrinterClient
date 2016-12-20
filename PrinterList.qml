@@ -2,6 +2,7 @@ import QtQuick 2.3
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
+import com.client.emindprint 1.0
 
 Window {
     id:printerlist
@@ -13,12 +14,20 @@ Window {
 
     title:qsTr("Add Remote Printers")
 
+    signal printerAdded(string prName)
     property string printerName
-    ListModel{
-        id:pModel
+//    ListModel{
+//        id:pModel
 
+//    }
+
+
+    EmindClient{id:client}
+
+    Component.onCompleted: {
+        console.log("nice")
+        printerlist.printerAdded.connect(client.setDefaultPrinter)
     }
-
 
 
     ListView{
@@ -72,7 +81,7 @@ Window {
                 onClicked: {
                     busyIndicator.visible = true;
                     busyIndicator.running = true;
-                    client.setDefaultPrinter();
+                    printerAdded("item");
                 }
 
                 BusyIndicator {

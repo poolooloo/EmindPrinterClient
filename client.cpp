@@ -31,7 +31,7 @@ bool Client::checkConnectivity(QString ip)
 {
     qDebug()<<"ip="<<ip<<endl;
     qDebug()<<__FUNCTION__<<endl;
-    psocket->abort();
+//    psocket->abort();
 
     psocket->connectToHost(ip,SERVER_PORT);
     return psocket->waitForConnected();
@@ -53,7 +53,7 @@ bool Client::checkLicense()
         qDebug()<<rmsg<<endl;
 
         if((rmsg.length()<5)&& (rmsg == "OK")){
-            qDebug()<<"OO"<<rmsg<<endl;
+            qDebug()<<"test:"<<rmsg<<endl;
             return true;
         }
         else if(rmsg == "AUTH WRONG"){
@@ -131,6 +131,7 @@ QString Client::rcvMsg()
     }
 
     in >> message;
+    qDebug()<<"message"<<message<<endl;
     blockSize = 0;
     return message;
 }
@@ -298,8 +299,9 @@ void Client::loadCupsFiles(const QStringList& fileNames,const QStringList& title
 }
 
 
-void Client::setDefaultPrinter(){
-
+void Client::setDefaultPrinter(QString prName){
+    qDebug()<<prName<<endl;
+    qDebug()<<__FUNCTION__<<endl;
 }
 
 

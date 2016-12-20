@@ -20,6 +20,4 @@ ApplicationWindow {
         source:"ClientLogin.qml"
     }
 
-
-
 }

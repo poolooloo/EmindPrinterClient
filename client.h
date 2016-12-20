@@ -32,7 +32,7 @@ public:
     void printerName() const;
     Q_INVOKABLE void sendFiles(QStringList& Files);
     void loadCupsFiles(const QStringList& fileNames,const QStringList& titles,const QString& options);
-    Q_INVOKABLE void setDefaultPrinter();
+
     void sndMsg(QString msgStr);
     QString rcvMsg();
     void checkConnect();
@@ -46,6 +46,7 @@ signals:
     void printerNameListChanged();
 
 public slots:
+    void setDefaultPrinter(QString prName);
     QStringList getPrinterNameList(QString& msg);
     Q_INVOKABLE bool checkConnectivity(QString ip);
     Q_INVOKABLE bool checkLicense();
