@@ -4,6 +4,8 @@
 #include <QMessageBox>
 #include <QObject>
 #include <QAbstractSocket>
+#include <QStringListModel>
+
 class QFile;
 class QTcpSocket;
 namespace EPT {
@@ -13,37 +15,42 @@ namespace EPT {
 class Client : public QObject
 {
     Q_OBJECT
+//    Q_PROPERTY(QStringListModel pNameListModel READ getPNameListModel NOTIFY pNameListModelChanged)
+    Q_PROPERTY(QString err READ getErr WRITE setErr NOTIFY errChanged)
+    Q_PROPERTY(QStringList printerNameList READ printerNameList WRITE setPrinterNameList NOTIFY printerNameListChanged)
+    Q_ENUMS(ServerError)
+
+
 public:
     explicit Client(QObject *parent = 0);
     ~Client();
 
     enum ServerError{ IpError,LicenseError};
-    Q_ENUMS(ServerError)
 
     Q_INVOKABLE void update();
-    Q_PROPERTY(QString err READ getErr WRITE setErr NOTIFY errChanged)
+    Q_INVOKABLE void reqPrinterList();
+    Q_INVOKABLE void reqLicense(QString license);
+    Q_INVOKABLE void sendFiles(QStringList& Files);
+
+
     QString getErr();
     void setErr(const QString error);
-
-    Q_PROPERTY(QStringList printerNameList READ printerNameList WRITE setPrinterNameList NOTIFY printerNameListChanged)
     QStringList printerNameList();
-    void setPrinterNameList(const QStringList&);
-
+    void setPrinterNameList(const QStringList);
     void printerName() const;
-    Q_INVOKABLE void sendFiles(QStringList& Files);
     void loadCupsFiles(const QStringList& fileNames,const QStringList& titles,const QString& options);
-
     void sndMsg(QString msgStr);
     QString rcvMsg();
     void checkConnect();
-    Q_INVOKABLE void reqPrinterList();
-    Q_INVOKABLE void reqLicense(QString license);
+//    void setPNameListModel(QStringList modellist);
+//    QStringListModel getPNameListModel();
 
 signals:
     void error();
     void errChanged();
     void errConnected();
     void printerNameListChanged();
+    void pNameListModelChanged(QStringList);
 
 public slots:
     void setDefaultPrinter(QString prName);
@@ -73,6 +80,8 @@ private:
 
     QString m_err;
     QStringList m_plist;
+    QStringListModel m_pnamelistModel;
+
 
 
 };

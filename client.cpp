@@ -1,6 +1,8 @@
 #include "client.h"
 #include <QTcpSocket>
 #include <QFile>
+#include <QProcess>
+
 
 namespace EPT {
 
@@ -74,7 +76,7 @@ void Client::reqPrinterList()
 }
 
 
-void Client::setPrinterNameList(const QStringList& list)
+void Client::setPrinterNameList(const QStringList list)
 {
     m_plist = list;
     emit printerNameListChanged();
@@ -104,8 +106,22 @@ QStringList Client::getPrinterNameList(QString& rmsg)
         qDebug()<<"no list"<<endl;
 //        reqPrinterList();
     }
+
     return m_plist;
 }
+
+//void Client::setPNameListModel(QStringList modellist)
+//{
+//    m_pnamelistModel.setStringList(modellist);
+//    emit pNameListModelChanged(modellist);
+//}
+
+//QStringListModel Client::getPNameListModel()
+//{
+//    QStringListModel tmodel;
+//    tmodel.setStringList(m_plist);
+//    return m_pnamelistModel;
+//}
 
 void Client::sndMsg(QString msgStr)
 {
@@ -302,6 +318,12 @@ void Client::loadCupsFiles(const QStringList& fileNames,const QStringList& title
 void Client::setDefaultPrinter(QString prName){
     qDebug()<<prName<<endl;
     qDebug()<<__FUNCTION__<<endl;
+    QProcess proc;
+    QString printerIp("192.168.25.198");
+    QString ppdName("qrc:/test.ppd");
+    proc.start(QString("gksu -D AddPrinter lpadmin -p %1@%2 -P %3 ").arg(prName).arg(printerIp).arg(ppdName));
+    proc.waitForFinished();
+
 }
 
 

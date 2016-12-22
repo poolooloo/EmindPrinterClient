@@ -16,10 +16,10 @@ Window {
 
     signal printerAdded(string prName)
     property string printerName
-//    ListModel{
-//        id:pModel
+    ListModel{
+        id:pModel
 
-//    }
+    }
 
 
     EmindClient{id:client}
@@ -33,7 +33,9 @@ Window {
     ListView{
         id:pView
         anchors.fill:parent
-        model:pModel
+//        model:pModel
+        model:pModel.data
+//        model:pNameListModel
         delegate:pDelegate
         anchors.alignWhenCentered: true
         anchors.margins: 10

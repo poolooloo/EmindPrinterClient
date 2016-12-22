@@ -10,7 +10,8 @@ SOURCES += main.cpp \
     client.cpp \
     cupsbackend.cpp \
     printer.cpp \
-    emindprintdbus.cpp
+    emindprintdbus.cpp \
+    printerlistmodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -22,11 +23,13 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-DISTFILES +=
+DISTFILES += \
+    CMakeList.txt
 
 HEADERS += \
     licensefactory.h \
     client.h \
     cupsbackend.h \
     printer.h \
-    emindprintdbus.h
+    emindprintdbus.h \
+    printerlistmodel.h
