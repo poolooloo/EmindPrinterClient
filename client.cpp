@@ -326,6 +326,7 @@ void Client::loadCupsFiles(const QStringList& fileNames,const QStringList& title
     foreach(QString fileName,fileNames){
 //        sendFiles(fileName);
         qDebug()<<"fileName="<<endl;
+        QMessageBox::information(0,"cups file rcv",tr("filename=%1").arg(fileName));
     }
 }
 
