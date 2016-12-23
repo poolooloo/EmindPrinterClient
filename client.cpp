@@ -29,6 +29,15 @@ Client::~Client()
 
 }
 
+
+Client* Client::instance()
+{
+    static Client *inst = 0;
+    if(!inst)
+        inst = new Client();
+    return inst;
+}
+
 bool Client::checkConnectivity(QString ip)
 {
     qDebug()<<"ip="<<ip<<endl;
@@ -307,10 +316,16 @@ void Client::printerName() const
 
 }
 
-void Client::loadCupsFiles(const QStringList& fileNames,const QStringList& titles,const QString& options)
+void Client::load(const QString &fileName,const QString &title,const QString &options,bool autoRemove)
+{
+    loadCupsFiles(QStringList()<<fileName,QStringList()<<title,options,autoRemove);
+}
+
+void Client::loadCupsFiles(const QStringList& fileNames,const QStringList& titles,const QString& options,bool autoRemove)
 {
     foreach(QString fileName,fileNames){
 //        sendFiles(fileName);
+        qDebug()<<"fileName="<<endl;
     }
 }
 

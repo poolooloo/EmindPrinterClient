@@ -10,8 +10,10 @@
 #include <QQuickView>
 #include <QQmlContext>
 #include <QtQuick/QQuickItem>
+#include "emindprintdbus.h"
 
 using namespace EPT;
+
 
 int main(int argc, char *argv[])
 {
@@ -65,6 +67,8 @@ int main(int argc, char *argv[])
     QStringList files;
     QStringList titles;
     QStringList args = app.arguments();
+    bool autoRemove = false;
+
     for(int i=1;i < args.count();++i){
         QString arg = args.at(i);
         if(arg == "-t" || arg == "--title"){
@@ -79,9 +83,12 @@ int main(int argc, char *argv[])
 
         files << args.at(i);
     }
+
+    EmindPrintDbus emDbus("org.EmindPrint","/EmindPrint");
+
     app.processEvents();
 
-//    loadCupsFiles(files,titles,"");
+    client->loadCupsFiles(files,titles,"",autoRemove);
 
     return app.exec();
 }

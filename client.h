@@ -10,8 +10,6 @@ class QFile;
 class QTcpSocket;
 namespace EPT {
 
-
-
 class Client : public QObject
 {
     Q_OBJECT
@@ -25,6 +23,7 @@ public:
     explicit Client(QObject *parent = 0);
     ~Client();
 
+    static Client* instance();
     enum ServerError{ IpError,LicenseError};
 
     Q_INVOKABLE void update();
@@ -38,7 +37,9 @@ public:
     QStringList printerNameList();
     void setPrinterNameList(const QStringList);
     void printerName() const;
-    void loadCupsFiles(const QStringList& fileNames,const QStringList& titles,const QString& options);
+    void load(const QString &fileName,const QString &title,const QString &options,bool autoRemove);
+
+    void loadCupsFiles(const QStringList& fileNames,const QStringList& titles,const QString& options,bool autoRemove);
     void sndMsg(QString msgStr);
     QString rcvMsg();
     void checkConnect();
@@ -82,9 +83,12 @@ private:
     QStringList m_plist;
     QStringListModel m_pnamelistModel;
 
-
-
 };
 
+
+#define client EPT::Client::instance()
+
+
 }
+
 #endif // CLIENT_H

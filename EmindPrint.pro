@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-QT += qml quick network widgets printsupport
+QT += qml quick network widgets printsupport dbus
 CONFIG += c++11
 
 LIBS += -lcups
