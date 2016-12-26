@@ -22,7 +22,7 @@ case "$1" in
 		# Remove lint from possible upgrades.
 		#rm -rf /var/spool/emindprinter/SPOOL
 		# Sanitize ownerships and permissions.
-		chmod 0700 /usr/lib/cups/backend/emindprinter
+		chmod 0700 /usr/lib/cups/backend/EmindPrint
 		#if ! [ -f /var/log/cups/emindprinter_log ]
 		#then
                 #        touch /var/log/cups/emindprinter_log
