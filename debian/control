@@ -3,7 +3,7 @@ Section: utils
 Priority: optional
 Maintainer: wufeiyun <wufeiyun@emindsoft.com.cn>
 Build-Depends: debhelper (>= 9),
-                qt (>=5),
+                qt5-default,
                 libcups2-dev,
                 pkg-config,
                 qtbase5-dev,
