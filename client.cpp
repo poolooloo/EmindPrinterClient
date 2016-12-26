@@ -336,7 +336,7 @@ void Client::setDefaultPrinter(QString prName){
     qDebug()<<__FUNCTION__<<endl;
     QProcess proc;
     QString printerIp("192.168.25.198");
-    QString ppdName("qrc:/test.ppd");
+    QString ppdName("qrc:/emindprinter.ppd");
     proc.start(QString("gksu -D AddPrinter lpadmin -p %1@%2 -P %3 ").arg(prName).arg(printerIp).arg(ppdName));
     proc.waitForFinished();
 
