@@ -195,9 +195,9 @@ DIST          = CMakeList.txt \
 		printer.cpp \
 		emindprintdbus.cpp \
 		printerlistmodel.cpp
-QMAKE_TARGET  = EmindPrint
+QMAKE_TARGET  = emindprinter
 DESTDIR       = 
-TARGET        = EmindPrint
+TARGET        = emindprinter
 
 
 first: all
