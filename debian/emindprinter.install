@@ -1,4 +1,4 @@
-usr/bin/EmindPrint
+usr/bin/emindprinter
 usr/lib/emindprinter/emindprinterbackend
 #usr/lib/emindprinter/emindprintermerger
 usr/lib/cups/backend/emindprinter
