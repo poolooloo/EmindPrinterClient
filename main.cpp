@@ -14,12 +14,29 @@
 
 using namespace EPT;
 
+void readEnvFile()
+{
+    QFile envFile(QDir::homePath() + "/.cache/EmindPrint.env");
+    if(envFile.exists()){
+        envFile.open(QFile::ReadOnly);
+        while(!envFile.atEnd()){
+            QString line = QString::fromLocal8Bit(envFile.readLine());
+            QString name = line.section("=",0,0).trimmed();
+            QString value = line.section("=",1).trimmed();
+            if(value.startsWith('\'')&&value.endsWith('\'') || (value.startsWith('"')&&value.startsWith('"'))){
+                value = value.mid(1,value.length()-2);
+            }
+
+            qputenv(name.toLocal8Bit(),value.toLocal8Bit());
+        }
+        env.close();
+    }
+}
 
 int main(int argc, char *argv[])
 {
+    readEnvFile();
     QGuiApplication app(argc, argv);
-
-
 
     //client register
     qmlRegisterType<Client>("com.client.emindprint",1,0,"EmindClient");

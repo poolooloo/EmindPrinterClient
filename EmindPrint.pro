@@ -24,7 +24,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
-    CMakeList.txt
+    CMakeList.txt \
+    org.emindprinter.serveice
 
 HEADERS += \
     licensefactory.h \
