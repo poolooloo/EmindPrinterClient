@@ -4,7 +4,7 @@ emindprinter usr/lib/cups/backend/emindprinter
 #usr/lib/cups/filter/emindprinter_pstopdf
 #usr/share/applications/emindprinter.desktop
 #usr/share/emindprinter/translations/emindprinterer_*.qm
-org.emindprinterer.service usr/share/dbus-1/services/org.emindprinterer.service
+org.emindprinter.service usr/share/dbus-1/services/org.emindprinter.service
 #usr/share/icons/hicolor/128x128/apps/emindprinter.png
 #usr/share/icons/hicolor/16x16/apps/emindprinter.png
 #usr/share/icons/hicolor/32x32/apps/emindprinter.png

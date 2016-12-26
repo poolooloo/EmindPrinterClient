@@ -34,3 +34,5 @@ HEADERS += \
     printer.h \
     emindprintdbus.h \
     printerlistmodel.h
+
+TARGET = emindprinter
