@@ -25,7 +25,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     CMakeList.txt \
-    org.emindprinter.serveice
+    org.emindprinter.serveice \
+    cups/emindprinter \
+    cups/emindprinterbackend \
+    cups/emindprinter.ppd
 
 HEADERS += \
     licensefactory.h \
@@ -34,5 +37,8 @@ HEADERS += \
     printer.h \
     emindprintdbus.h \
     printerlistmodel.h
+<<<<<<< HEAD
+=======
 
+>>>>>>> 4e477f936dca31dbf66fd4a272d63d8cb0da1e7d
 TARGET = emindprinter
