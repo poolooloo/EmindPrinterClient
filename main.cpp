@@ -29,7 +29,7 @@ void readEnvFile()
 
             qputenv(name.toLocal8Bit(),value.toLocal8Bit());
         }
-        env.close();
+        envFile.close();
     }
 }
 
