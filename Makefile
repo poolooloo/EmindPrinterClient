@@ -32,8 +32,13 @@ DEL_DIR       = rmdir
 MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
+<<<<<<< HEAD
 DISTNAME      = emindprinter1.0.0
 DISTDIR = /home/wufeiyun/ProjectEx/temp/emindprinter-1.0/.tmp/emindprinter1.0.0
+=======
+DISTNAME      = EmindPrint1.0.0
+DISTDIR = /home/wufeiyun/ProjectEx/temp/emindprinter-1.0/.tmp/EmindPrint1.0.0
+>>>>>>> e4692482bb900d2d328580a4fc5bf2e4f375f91e
 LINK          = g++
 LFLAGS        = -m64 -Wl,-O1
 LIBS          = $(SUBLIBS) -L/usr/X11R6/lib64 -lcups -lQt5Quick -lQt5PrintSupport -lQt5Widgets -lQt5Gui -lQt5Qml -lQt5Network -lQt5DBus -lQt5Core -lGL -lpthread 
@@ -197,9 +202,9 @@ DIST          = CMakeList.txt \
 		printer.cpp \
 		emindprintdbus.cpp \
 		printerlistmodel.cpp
-QMAKE_TARGET  = emindprinter
+QMAKE_TARGET  = EmindPrint
 DESTDIR       = 
-TARGET        = emindprinter
+TARGET        = EmindPrint
 
 
 first: all
