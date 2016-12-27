@@ -11,6 +11,7 @@
 #include <QQmlContext>
 #include <QtQuick/QQuickItem>
 #include "emindprintdbus.h"
+#include "printerlistmodel.h"
 
 using namespace EPT;
 
@@ -35,13 +36,15 @@ void readEnvFile()
 
 int main(int argc, char *argv[])
 {
-    readEnvFile();
+//    readEnvFile();
     QGuiApplication app(argc, argv);
 
     //client register
     qmlRegisterType<Client>("com.client.emindprint",1,0,"EmindClient");
-    qmlRegisterType<CupsBackend>("com.client.CupsBackend",1,0,"CupsBackend");
+    qmlRegisterType<CupsBackend>("com.client.emindprint",1,0,"CupsBackend");
     qmlRegisterType<Printer>("com.client.emindprint",1,0,"Printer");
+    qmlRegisterType<PrinterListModel>("com.client.emindprint",1,0,"PrinterModel");
+
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     QObject::connect(&engine,SIGNAL(quit()),qApp,SLOT(quit()));
@@ -68,17 +71,17 @@ int main(int argc, char *argv[])
         bRet = QMetaObject::invokeMethod(txErr1,"doLayout");
     }
 
-    //modeldata
-    QStringList dataList;
-    dataList.append("Item 1");
-    dataList.append("Item 2");
-    dataList.append("Item 3");
-    QQmlEngine eng;
-    QStringListModel modelData;
-    QQmlContext *ctxt = new QQmlContext(eng.rootContext());
-    ctxt->setContextProperty("pModel",QVariant::fromValue(dataList));
-    QQmlComponent component(&eng,"qrc:PrinterList.qml");
-    component.create(ctxt);
+//    //modeldata
+//    QStringList dataList;
+//    dataList.append("Item 1");
+//    dataList.append("Item 2");
+//    dataList.append("Item 3");
+//    QQmlEngine eng;
+//    QStringListModel modelData;
+//    QQmlContext *ctxt = new QQmlContext(eng.rootContext());
+//    ctxt->setContextProperty("pModel",QVariant::fromValue(dataList));
+//    QQmlComponent component(&eng,"qrc:/PrinterList.qml");
+//    component.create(ctxt);
 
     //to handle cups files
     QStringList files;
@@ -101,7 +104,7 @@ int main(int argc, char *argv[])
         files << args.at(i);
     }
 
-    EmindPrintDbus emDbus("org.EmindPrint","/EmindPrint");
+    EmindPrintDbus emDbus("org.emindprinter","/emindprinter");
 
     app.processEvents();
 

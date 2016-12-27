@@ -16,3 +16,7 @@ function travelList(obj){
 //            printerlist.pmodel.append({"name":pname});
     }
 }
+
+function rcvFile(){
+    console.log("hello");
+}

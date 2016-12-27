@@ -2,7 +2,7 @@
 #include <QTcpSocket>
 #include <QFile>
 #include <QProcess>
-
+#include "printerlistmodel.h"
 
 namespace EPT {
 
@@ -12,16 +12,23 @@ const quint16 SERVER_PORT = 6666;
 Client::Client(QObject *parent) : QObject(parent)
 {
     psocket = new QTcpSocket(this);
-//    connect(psocket,SIGNAL(readyRead()),this,SLOT(checkConnectivity()));
-//    connect(psocket,SIGNAL(readyRead()),this,SLOT(getPrinterNameList()));
-    connect(psocket,SIGNAL(readyRead()),this,SLOT(checkLicense()));
+    //    connect(psocket,SIGNAL(readyRead()),this,SLOT(checkConnectivity()));
+    //    connect(psocket,SIGNAL(readyRead()),this,SLOT(getPrinterNameList()));
+//    connect(psocket,SIGNAL(readyRead()),this,SLOT(checkLicense()));
 
     connect(psocket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(displayError(QAbstractSocket::SocketError)));
-//    connect(psocket,SIGNAL(bytesWritten(qint64)),this,SLOT(updateClientProgress(qint64)));
+    //    connect(psocket,SIGNAL(bytesWritten(qint64)),this,SLOT(updateClientProgress(qint64)));
     loadSize = 4*1024;
     totalBytes = 0;
     bytesWritten = 0;
     bytesToWrite = 0;
+
+    m_plist<<"nice"<<"hello"<<"end";
+
+    printerModel = new PrinterListModel(this);
+//    printerModel->addPrinterName("nike");
+    blockSize = 0;
+
 }
 
 Client::~Client()
@@ -40,43 +47,60 @@ Client* Client::instance()
 
 bool Client::checkConnectivity(QString ip)
 {
-    qDebug()<<"ip="<<ip<<endl;
-    qDebug()<<__FUNCTION__<<endl;
-//    psocket->abort();
-
+    psocket->abort();
     psocket->connectToHost(ip,SERVER_PORT);
-    return psocket->waitForConnected();
+    while(!psocket->waitForConnected(1000))
+        continue;
+    qDebug()<<"return true"<<endl;
+    return true;
 
 }
 
-void Client::reqLicense(QString license)
+void Client::sndReqLicense(QString license)
 {
+    QStringList printer_list;
     sndMsg(license);
+    while(psocket->waitForReadyRead()){
+        QString bo=rcvMsg();
+        qDebug() << "bo==" <<bo;
+        if(bo!="OK")
+        {
+            qDebug()<<"The authcode wrong!"<<endl;
+            emit sigAuthWrong();
+            return;
+        }
+
+        emit sigConnected();
+        sndMsg("Request printer list!");
+        while(psocket->waitForReadyRead())
+        {
+            QString printer_str=rcvMsg();
+            printer_list = printer_str.split(",");
+        }
+        foreach (auto printer, printer_list) {
+            printerModel->addPrinterName(printer);
+        }
+    }
 }
 
-bool Client::checkLicense()
+void Client::checkLicense()
 {
-    qDebug()<<__FUNCTION__<<endl;
-
-//    while(psocket->waitForReadyRead())
+    //
+    QString rmsg=rcvMsg();
+    if(!rmsg.isNull())
     {
-        QString rmsg = rcvMsg();
-        qDebug()<<rmsg<<endl;
-
         if((rmsg.length()<5)&& (rmsg == "OK")){
-            qDebug()<<"test:"<<rmsg<<endl;
-            return true;
+            emit sigConnected();
         }
         else if(rmsg == "AUTH WRONG"){
-            qDebug()<<rmsg<<endl;
-            setErr(rmsg);
-            return false;
+            //setErr(rmsg);
+            emit sigAuthWrong();
         }else{
             getPrinterNameList(rmsg);
         }
+    }else{
 
     }
-
 }
 
 void Client::reqPrinterList()
@@ -96,7 +120,7 @@ QStringList Client::printerNameList()
     return m_plist;
 }
 
-QStringList Client::getPrinterNameList(QString& rmsg)
+void  Client::getPrinterNameList(QString& rmsg)
 {
     QString printers = rmsg;
     qDebug()<<"printers="<<printers<<endl;
@@ -109,14 +133,15 @@ QStringList Client::getPrinterNameList(QString& rmsg)
     if(tmpList.at(0) == "PList"){
         for(int i=1;i<tmpList.count()-1;i++) {
             m_plist << tmpList[i];
+            printerModel->addPrinterName(tmpList[i]);
             qDebug()<<m_plist[i]<<endl;
         }
     }else{
         qDebug()<<"no list"<<endl;
-//        reqPrinterList();
+        //        reqPrinterList();
     }
+    setPrinterNameList(m_plist);
 
-    return m_plist;
 }
 
 //void Client::setPNameListModel(QStringList modellist)
@@ -147,6 +172,8 @@ QString Client::rcvMsg()
 {
     QDataStream in(psocket);
 
+    qDebug()<<psocket->bytesAvailable()<<endl;
+
     if(blockSize == 0 ){
         if(psocket->bytesAvailable()<(int)sizeof(quint16)){
             return 0;
@@ -154,9 +181,12 @@ QString Client::rcvMsg()
 
         in >> blockSize;
     }
+    if (psocket->bytesAvailable() < blockSize)
+    {
+        return 0;
+    }
 
     in >> message;
-    qDebug()<<"message"<<message<<endl;
     blockSize = 0;
     return message;
 }
@@ -318,13 +348,16 @@ void Client::printerName() const
 
 void Client::load(const QString &fileName,const QString &title,const QString &options,bool autoRemove)
 {
+
     loadCupsFiles(QStringList()<<fileName,QStringList()<<title,options,autoRemove);
 }
 
 void Client::loadCupsFiles(const QStringList& fileNames,const QStringList& titles,const QString& options,bool autoRemove)
 {
+    qDebug()<<__FUNCTION__<<endl;
+    emit rcvCupsFile();
     foreach(QString fileName,fileNames){
-//        sendFiles(fileName);
+        //        sendFiles(fileName);
         qDebug()<<"fileName="<<endl;
         QMessageBox::information(0,"cups file rcv",tr("filename=%1").arg(fileName));
     }
@@ -336,7 +369,7 @@ void Client::setDefaultPrinter(QString prName){
     qDebug()<<__FUNCTION__<<endl;
     QProcess proc;
     QString printerIp("192.168.25.198");
-    QString ppdName("qrc:/emindprinter.ppd");
+    QString ppdName("cups/emindprinter.ppd");
     proc.start(QString("gksu -D AddPrinter lpadmin -p %1@%2 -P %3 ").arg(prName).arg(printerIp).arg(ppdName));
     proc.waitForFinished();
 

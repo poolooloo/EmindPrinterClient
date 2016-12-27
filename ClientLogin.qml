@@ -18,11 +18,23 @@ Window {
     minimumWidth: 400
     visible:true
 
-    property variant printerNameList:client.printerNameList
+    property variant printerNameList:""
+    property int reqok:0
+    property int reqAuth:0
 
-    Loader { id:printer }
+    signal showPrinterWin()
 
-    EmindClient{id:client}
+    EmindClient{
+        id:client
+        onRcvCupsFile:clientWin.visible = false;
+        onSigConnected: {
+            clientWin.hide();
+            showPrinterWin();
+        }
+        onSigAuthWrong:errText2.visible = true;
+    }
+
+
 
 
     Button {
@@ -69,33 +81,20 @@ Window {
         text: qsTr("Next")
 
         enabled: Jsclient.enableBtnNext()
+        property int reqcount: 0
+
         onClicked:
         {
             btnNext.enabled = false;
             if(client.checkConnectivity(fieldIP.text)){
-
-                client.reqLicense(fieldLicense.text);
-
-                if(client.checkLicense()){
-                    printer.source="PrinterList.qml";
-                    clientWin.visible = false;
-                    client.reqPrinterList();
-                    clientWin.printerNameList = client.printerNameList;
-                    Jsclient.travelList(printerNameList);
-                    errText1.visible = false;
-                }else{
-//                    errText1.text = client.getErr;
-                    errText1.visible = true;
-                }
-
-                errText2.visible = false;
+                client.sndReqLicense(fieldLicense.text);
             }else{
-//                errText2.text = client.err;
-                errText2.visible = true;
+                //errText2.text = client.err;
+                errText1.visible = true;
+                errText2.visible = false;
             }
             btnNext.enabled = true;
         }
-
     }
 
     Text {

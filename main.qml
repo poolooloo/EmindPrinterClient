@@ -16,8 +16,20 @@ ApplicationWindow {
     minimumWidth: 400
 
 
-    Loader{
-        source:"ClientLogin.qml"
+//    Loader{
+//        id:mainWin
+//        source:"ClientLogin.qml"
+//    }
+
+    ClientLogin{
+        id:loginWin
     }
+
+    PrinterList{
+        id:printerWin
+    }
+
+    Component.onCompleted: loginWin.show();
+
 
 }

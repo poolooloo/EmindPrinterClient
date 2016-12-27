@@ -10,17 +10,26 @@ Window {
     minimumHeight: 400
     maximumWidth: 500
     minimumWidth: 500
-    visible:true
+    visible:false
 
     title:qsTr("Add Remote Printers")
 
     signal printerAdded(string prName)
     property string printerName
-    ListModel{
+
+    PrinterModel{
         id:pModel
 
     }
 
+    ClientLogin{
+        onShowPrinterWin: printerlist.show();
+    }
+
+    Connections{
+        id:conn
+        onVisibleChaneged: printerlist.show();
+    }
 
     EmindClient{id:client}
 
@@ -33,9 +42,7 @@ Window {
     ListView{
         id:pView
         anchors.fill:parent
-//        model:pModel
-        model:pModel.data
-//        model:pNameListModel
+        model:pModel
         delegate:pDelegate
         anchors.alignWhenCentered: true
         anchors.margins: 10

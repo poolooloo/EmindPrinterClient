@@ -8,6 +8,7 @@
 
 class QFile;
 class QTcpSocket;
+class PrinterListModel;
 namespace EPT {
 
 class Client : public QObject
@@ -28,7 +29,7 @@ public:
 
     Q_INVOKABLE void update();
     Q_INVOKABLE void reqPrinterList();
-    Q_INVOKABLE void reqLicense(QString license);
+    Q_INVOKABLE void sndReqLicense(QString license);
     Q_INVOKABLE void sendFiles(QStringList& Files);
 
 
@@ -52,12 +53,15 @@ signals:
     void errConnected();
     void printerNameListChanged();
     void pNameListModelChanged(QStringList);
+    void rcvCupsFile();
+    void sigConnected();
+    void sigAuthWrong();
 
 public slots:
     void setDefaultPrinter(QString prName);
-    QStringList getPrinterNameList(QString& msg);
+    void getPrinterNameList(QString& msg);
     Q_INVOKABLE bool checkConnectivity(QString ip);
-    Q_INVOKABLE bool checkLicense();
+    Q_INVOKABLE void checkLicense();
     void displayError(QAbstractSocket::SocketError);
     void updateClientProgress(qint64 numBytes);
 
@@ -82,6 +86,8 @@ private:
     QString m_err;
     QStringList m_plist;
     QStringListModel m_pnamelistModel;
+
+    PrinterListModel *printerModel;
 
 };
 
