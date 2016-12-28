@@ -41,9 +41,9 @@ int main(int argc, char *argv[])
 
     //client register
     qmlRegisterType<Client>("com.client.emindprint",1,0,"EmindClient");
-    qmlRegisterType<CupsBackend>("com.client.emindprint",1,0,"CupsBackend");
-    qmlRegisterType<Printer>("com.client.emindprint",1,0,"Printer");
-    qmlRegisterType<PrinterListModel>("com.client.emindprint",1,0,"PrinterModel");
+//    qmlRegisterType<CupsBackend>("com.client.emindprint",1,0,"CupsBackend");
+//    qmlRegisterType<Printer>("com.client.emindprint",1,0,"Printer");
+    qmlRegisterType<PrinterListModel>("com.client.emindprint",1,0,"PrinterListModel");
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
@@ -58,18 +58,22 @@ int main(int argc, char *argv[])
         }
     }
 
-    new Client(root);
-    QObject* txErr = root->findChild<QObject*>("btnNext");
-    if(txErr){
-        QObject::connect(txErr,SIGNAL(clicked()),&app,SLOT(quit()));
-    }
+//    QQmlContext *ctx = engine.rootContext();
+//    ctx->setContextProperty("printModel",new PrinterListModel());
+//    engine.load(QUrl(QStringLiteral("qrc:/PrinterList.qml")));
 
-    QObject* txErr1 = root->findChild<QObject*>("errText1");
-    if(txErr1){
-        bool bRet = QMetaObject::invokeMethod(txErr1,"setText",Q_ARG(QString,"connecting error"));
-        txErr1->setProperty("Text",QObject::tr("error error"));
-        bRet = QMetaObject::invokeMethod(txErr1,"doLayout");
-    }
+    new Client(root);
+//    QObject* txErr = root->findChild<QObject*>("btnNext");
+//    if(txErr){
+//        QObject::connect(txErr,SIGNAL(clicked()),&app,SLOT(quit()));
+//    }
+
+//    QObject* txErr1 = root->findChild<QObject*>("errText1");
+//    if(txErr1){
+//        bool bRet = QMetaObject::invokeMethod(txErr1,"setText",Q_ARG(QString,"connecting error"));
+//        txErr1->setProperty("Text",QObject::tr("error error"));
+//        bRet = QMetaObject::invokeMethod(txErr1,"doLayout");
+//    }
 
 //    //modeldata
 //    QStringList dataList;
@@ -82,6 +86,9 @@ int main(int argc, char *argv[])
 //    ctxt->setContextProperty("pModel",QVariant::fromValue(dataList));
 //    QQmlComponent component(&eng,"qrc:/PrinterList.qml");
 //    component.create(ctxt);
+
+
+
 
     //to handle cups files
     QStringList files;

@@ -6,6 +6,7 @@
 
 class Printer:public QObject
 {
+    Q_OBJECT
 public:
     Printer();
 

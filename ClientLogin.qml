@@ -18,22 +18,58 @@ Window {
     minimumWidth: 400
     visible:true
 
-    property variant printerNameList:""
+
     property int reqok:0
     property int reqAuth:0
 
     signal showPrinterWin()
 
-    EmindClient{
-        id:client
-        onRcvCupsFile:clientWin.visible = false;
-        onSigConnected: {
-            clientWin.hide();
-            showPrinterWin();
-        }
-        onSigAuthWrong:errText2.visible = true;
+    PrinterList{
+        id:pWin
     }
 
+    Connections{
+        target:clientWin
+        onShowPrinterWin:{
+            pWin.visible = true;
+
+        }
+    }
+
+
+
+
+    EmindClient{
+        id:client
+//        onRcvCupsFile:clientWin.visible = false;
+        onSigConnected: {
+            clientWin.showPrinterWin();
+            clientWin.hide();
+
+        }
+        onSigAuthWrong:{
+            errText2.color="red";
+            errText2.visible = true;
+            fieldLicense.style = fieldStyleErr;
+        }
+        onSigConnectRefused: {
+            errText1.visible = true;
+            errText1.color="red";
+            fieldIP.style=fieldStyleErr;
+        }
+
+    }
+
+
+
+    Component {
+        id:fieldStyleErr
+        TextFieldStyle{
+            background: Rectangle{
+                border.color: "red";
+            }
+        }
+    }
 
 
 
@@ -81,18 +117,12 @@ Window {
         text: qsTr("Next")
 
         enabled: Jsclient.enableBtnNext()
-        property int reqcount: 0
 
         onClicked:
         {
             btnNext.enabled = false;
-            if(client.checkConnectivity(fieldIP.text)){
-                client.sndReqLicense(fieldLicense.text);
-            }else{
-                //errText2.text = client.err;
-                errText1.visible = true;
-                errText2.visible = false;
-            }
+
+            client.checkConnectivity(fieldIP.text,fieldLicense.text);
             btnNext.enabled = true;
         }
     }
@@ -181,11 +211,11 @@ Window {
 
     }
 
-    Item {
-        id:printerlist
-        width:500
-        height:400
-    }
+//    Item {
+//        id:printerlist
+//        width:500
+//        height:400
+//    }
 
 
 

@@ -3,6 +3,7 @@ import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
+import com.client.emindprint 1.0
 
 ApplicationWindow {
     objectName: "rootObj"
@@ -15,21 +16,47 @@ ApplicationWindow {
     maximumWidth: 400
     minimumWidth: 400
 
-
-//    Loader{
-//        id:mainWin
-//        source:"ClientLogin.qml"
+//    StackView{
+//        id:stackWin
+//        initialItem: clientWin
 //    }
 
-    ClientLogin{
-        id:loginWin
+//    Component{
+//        id:clientWin
+//        ClientLogin{
+//            width: 400
+//            height: 240
+//            visible: true
+//            onShowPrinterWin: {
+
+//            }
+//        }
+//    }
+
+//    Component{
+//        id:printerWin
+//        PrinterList{
+
+//        }
+//    }
+
+//    Component.onCompleted: {
+//        var mainWin = clientWin.createObject(root);
+//        mainWin.show();
+//    }
+
+    Loader{
+        id:mainWin
     }
 
-    PrinterList{
-        id:printerWin
+    Component.onCompleted: {
+        mainWin.source = "ClientLogin.qml";
     }
 
-    Component.onCompleted: loginWin.show();
+
+
+
+
 
 
 }

@@ -5,6 +5,7 @@ import QtQuick.Controls.Styles 1.4
 import com.client.emindprint 1.0
 
 Window {
+    objectName: "printerWin"
     id:printerlist
     maximumHeight: 400
     minimumHeight: 400
@@ -13,31 +14,19 @@ Window {
     visible:false
 
     title:qsTr("Add Remote Printers")
+    property string pnameStr1: ""
+    property var pNameList:[]
 
-    signal printerAdded(string prName)
-    property string printerName
+//    signal printerAdded(string prName)
+//    property string printerName
 
-    PrinterModel{
+//    PrinterListModel{
+//        id:pModel
+//    }
+
+    ListModel{
         id:pModel
-
     }
-
-    ClientLogin{
-        onShowPrinterWin: printerlist.show();
-    }
-
-    Connections{
-        id:conn
-        onVisibleChaneged: printerlist.show();
-    }
-
-    EmindClient{id:client}
-
-    Component.onCompleted: {
-        console.log("nice")
-        printerlist.printerAdded.connect(client.setDefaultPrinter)
-    }
-
 
     ListView{
         id:pView
@@ -49,7 +38,31 @@ Window {
 
     }
 
+    EmindClient{
+        id:emclient
+        onPlistSent:{
+            console.log("test");
+            pnameStr1 = emclient.pnameStr;
+            console.log(pnameStr1);
 
+        }
+    }
+
+
+
+//test
+//    ListModel {
+//        id:pModel
+//          ListElement {
+//              name: "Bill Smith"
+//          }
+//          ListElement {
+//              name: "John Brown"
+//          }
+//          ListElement {
+//              name: "Sam Wise"
+//          }
+//      }
 
     Component{
         id:pDelegate
@@ -62,7 +75,7 @@ Window {
             Text{
                 id:printerName
                 anchors.alignWhenCentered : true
-                text:modelData
+                text:prname
                 font.pixelSize: 22
             }
 
@@ -90,13 +103,11 @@ Window {
                 onClicked: {
                     busyIndicator.visible = true;
                     busyIndicator.running = true;
-                    printerAdded("item");
                 }
 
                 BusyIndicator {
                     id:busyIndicator
                     anchors.fill: parent
-//                    anchors.alignWhenCentered : true
                     width:45
                     height: 45
                     visible: false
