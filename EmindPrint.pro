@@ -11,7 +11,8 @@ SOURCES += main.cpp \
     cupsbackend.cpp \
     printer.cpp \
     emindprintdbus.cpp \
-    printerlistmodel.cpp
+    printerlistmodel.cpp \
+    tcpthread.cpp
 
 RESOURCES += qml.qrc
 
@@ -36,6 +37,8 @@ HEADERS += \
     cupsbackend.h \
     printer.h \
     emindprintdbus.h \
-    printerlistmodel.h
+    printerlistmodel.h \
+    tcpthread.h \
+    protocol.h
 
 TARGET = emindprinter

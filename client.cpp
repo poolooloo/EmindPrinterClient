@@ -4,30 +4,29 @@
 #include <QProcess>
 #include "printerlistmodel.h"
 
+
 namespace EPT {
 
 const QString AUTH_CODE = "emind";
 const quint16 SERVER_PORT = 6666;
 
+
 Client::Client(QObject *parent) : QObject(parent)
 {
-    psocket = new QTcpSocket(this);
-    //    connect(psocket,SIGNAL(readyRead()),this,SLOT(checkConnectivity()));
-    //    connect(psocket,SIGNAL(readyRead()),this,SLOT(getPrinterNameList()));
-//    connect(psocket,SIGNAL(readyRead()),this,SLOT(checkLicense()));
-
+    psocket = new QTcpSocket();
     connect(psocket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(displayError(QAbstractSocket::SocketError)));
-    //    connect(psocket,SIGNAL(bytesWritten(qint64)),this,SLOT(updateClientProgress(qint64)));
+    //    connect(psocket,SIGNAL(readyRead()),this,SLOT(onReadyRead()));
+    connect(psocket,SIGNAL(readyRead()),this,SLOT(checkLicense()));
+
     loadSize = 4*1024;
     totalBytes = 0;
     bytesWritten = 0;
     bytesToWrite = 0;
 
-    m_plist<<"nice"<<"hello"<<"end";
-
     printerModel = new PrinterListModel(this);
-//    printerModel->addPrinterName("nike");
     blockSize = 0;
+
+
 
 }
 
@@ -45,15 +44,23 @@ Client* Client::instance()
     return inst;
 }
 
-bool Client::checkConnectivity(QString ip)
+
+void Client::onReadyRead()
+{
+
+
+}
+
+
+void Client::checkConnectivity(QString ip,QString license)
 {
     psocket->abort();
     psocket->connectToHost(ip,SERVER_PORT);
-    while(!psocket->waitForConnected(1000))
-        continue;
-    qDebug()<<"return true"<<endl;
-    return true;
+    //    tcpThread = new TcpThread(ip,license,this);
 
+    if(psocket->waitForConnected(1000))
+        //        sndReqLicense(license);
+        sndMsg(license);
 }
 
 void Client::sndReqLicense(QString license)
@@ -72,25 +79,28 @@ void Client::sndReqLicense(QString license)
 
         emit sigConnected();
         sndMsg("Request printer list!");
-        while(psocket->waitForReadyRead())
+        while(psocket->waitForReadyRead(3000))
         {
+            qDebug()<<"waitForReadyRead"<<endl;
             QString printer_str=rcvMsg();
             printer_list = printer_str.split(",");
         }
         foreach (auto printer, printer_list) {
+            qDebug()<<"addPrinterName"<<endl;
             printerModel->addPrinterName(printer);
         }
+        break;
     }
 }
 
 void Client::checkLicense()
 {
-    //
     QString rmsg=rcvMsg();
     if(!rmsg.isNull())
     {
         if((rmsg.length()<5)&& (rmsg == "OK")){
             emit sigConnected();
+            reqPrinterList();
         }
         else if(rmsg == "AUTH WRONG"){
             //setErr(rmsg);
@@ -123,25 +133,31 @@ QStringList Client::printerNameList()
 void  Client::getPrinterNameList(QString& rmsg)
 {
     QString printers = rmsg;
-    qDebug()<<"printers="<<printers<<endl;
+
+    setPnameStr(printers);
+
     QStringList tmpList;
     tmpList = printers.split(",");
-    foreach (auto str, tmpList) {
-        qDebug()<<str<<endl;
-    }
-    qDebug()<<tmpList.at(0)<<endl;
-    if(tmpList.at(0) == "PList"){
-        for(int i=1;i<tmpList.count()-1;i++) {
-            m_plist << tmpList[i];
-            printerModel->addPrinterName(tmpList[i]);
-            qDebug()<<m_plist[i]<<endl;
-        }
-    }else{
-        qDebug()<<"no list"<<endl;
-        //        reqPrinterList();
-    }
-    setPrinterNameList(m_plist);
 
+    for(int i=0;i<tmpList.count();i++) {
+        m_plist << tmpList[i];
+        printerModel->addPrinterName(tmpList[i]);
+    }
+
+    setPrinterNameList(m_plist);
+    emit plistSent();
+    qDebug()<<"plistSent==>"<<endl;
+}
+
+QString Client::pnameStr()
+{
+    return m_pnameStr;
+}
+
+void Client::setPnameStr(const QString str)
+{
+    m_pnameStr = str;
+    emit pnameStrChanged();
 }
 
 //void Client::setPNameListModel(QStringList modellist)
@@ -316,24 +332,20 @@ void Client::displayError(QAbstractSocket::SocketError psocketErr)
     switch(psocketErr){
     case QAbstractSocket::HostNotFoundError:
         qDebug()<<"HostNotFoundError"<<endl;
-        //        QMessageBox::information(0, tr("Error"),
-        //                                 tr("HostNotFoundError"));
+        emit sigConnectRefused();
         break;
 
     case QAbstractSocket::ConnectionRefusedError:
         qDebug()<<"ConnectionRefusedError"<<endl;
-        //        QMessageBox::information(0, tr("Error"),
-        //                                 tr("ConnectionRefusedError"));
+        emit sigConnectRefused();
         break;
     case QAbstractSocket::SocketTimeoutError:
         qDebug()<<"psocketTimeoutError"<<endl;
-        //        QMessageBox::information(0, tr("Error"),
-        //                                 tr("psocketTimeoutError"));
+        //        emit sigConnectRefused();
         break;
     case QAbstractSocket::DatagramTooLargeError:
         qDebug()<<"DatagramTooLargeError"<<endl;
-        //        QMessageBox::information(0, tr("Error"),
-        //                                 tr("DatagramTooLargeError"));
+        //        emit sigConnectRefused();
         break;
     default:
         break;
@@ -372,6 +384,7 @@ void Client::setDefaultPrinter(QString prName){
     QString ppdName("cups/emindprinter.ppd");
     proc.start(QString("gksu -D AddPrinter lpadmin -p %1@%2 -P %3 ").arg(prName).arg(printerIp).arg(ppdName));
     proc.waitForFinished();
+    emit printerSetFinished();
 
 }
 

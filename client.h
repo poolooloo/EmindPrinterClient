@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QAbstractSocket>
 #include <QStringListModel>
+#include "tcpthread.h"
 
 class QFile;
 class QTcpSocket;
@@ -17,6 +18,7 @@ class Client : public QObject
 //    Q_PROPERTY(QStringListModel pNameListModel READ getPNameListModel NOTIFY pNameListModelChanged)
     Q_PROPERTY(QString err READ getErr WRITE setErr NOTIFY errChanged)
     Q_PROPERTY(QStringList printerNameList READ printerNameList WRITE setPrinterNameList NOTIFY printerNameListChanged)
+    Q_PROPERTY(QString pnameStr READ pnameStr WRITE setPnameStr NOTIFY pnameStrChanged)
     Q_ENUMS(ServerError)
 
 
@@ -32,9 +34,10 @@ public:
     Q_INVOKABLE void sndReqLicense(QString license);
     Q_INVOKABLE void sendFiles(QStringList& Files);
 
-
+    QString pnameStr();
+    void setPnameStr(const QString);
     QString getErr();
-    void setErr(const QString error);
+    void setErr(const QString);
     QStringList printerNameList();
     void setPrinterNameList(const QStringList);
     void printerName() const;
@@ -56,14 +59,19 @@ signals:
     void rcvCupsFile();
     void sigConnected();
     void sigAuthWrong();
+    void sigConnectRefused();
+    void pnameStrChanged();
+    void plistSent();
+    void printerSetFinished();
 
 public slots:
     void setDefaultPrinter(QString prName);
     void getPrinterNameList(QString& msg);
-    Q_INVOKABLE bool checkConnectivity(QString ip);
-    Q_INVOKABLE void checkLicense();
+    Q_INVOKABLE void checkConnectivity(QString ip,QString license);
+    void checkLicense();
     void displayError(QAbstractSocket::SocketError);
     void updateClientProgress(qint64 numBytes);
+    void onReadyRead();
 
 
 private:
@@ -88,6 +96,8 @@ private:
     QStringListModel m_pnamelistModel;
 
     PrinterListModel *printerModel;
+//    TcpThread *tcpThread;
+    QString m_pnameStr;
 
 };
 

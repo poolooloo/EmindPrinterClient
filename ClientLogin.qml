@@ -6,6 +6,8 @@ import QtQuick.Controls.Styles 1.4
 import com.client.emindprint 1.0
 import "client.js" as Jsclient
 
+
+
 Window {
     objectName: "clientWin"
     id:clientWin
@@ -18,22 +20,84 @@ Window {
     minimumWidth: 400
     visible:true
 
-    property variant printerNameList:""
+
     property int reqok:0
     property int reqAuth:0
 
     signal showPrinterWin()
 
-    EmindClient{
-        id:client
-        onRcvCupsFile:clientWin.visible = false;
-        onSigConnected: {
-            clientWin.hide();
-            showPrinterWin();
-        }
-        onSigAuthWrong:errText2.visible = true;
+    PrinterList{
+        id:pWin
+        signal showList()
+        signal stopSpinner()
     }
 
+    Connections{
+        target:clientWin
+        onShowPrinterWin:{
+            pWin.visible = true;
+
+        }
+    }
+
+
+
+
+    EmindClient{
+        id:client
+//        onRcvCupsFile:clientWin.visible = false;
+        onSigConnected: {
+            clientWin.showPrinterWin();
+            clientWin.hide();
+        }
+        onSigAuthWrong:{
+            errText2.color="red";
+            errText2.visible = true;
+            fieldLicense.style = fieldStyleErr;
+        }
+        onSigConnectRefused: {
+            errText1.visible = true;
+            errText1.color="red";
+            fieldIP.style=fieldStyleErr;
+        }
+        onPlistSent:{
+            Jsclient.g_str = client.pnameStr;
+            console.log(Jsclient.g_str);
+            pWin.showList();
+        }
+        onPrinterSetFinished:{
+            pWin.stopSpinner();
+        }
+
+    }
+
+    Connections{
+        target:client
+        onSigConnected: {
+            clientWin.showPrinterWin();
+            clientWin.hide();
+        }
+        onSigAuthWrong:{
+            errText2.color="red";
+            errText2.visible = true;
+            fieldLicense.style = fieldStyleErr;
+        }
+        onSigConnectRefused: {
+            errText1.visible = true;
+            errText1.color="red";
+            fieldIP.style=fieldStyleErr;
+        }
+    }
+
+
+    Component {
+        id:fieldStyleErr
+        TextFieldStyle{
+            background: Rectangle{
+                border.color: "red";
+            }
+        }
+    }
 
 
 
@@ -80,23 +144,24 @@ Window {
 
         text: qsTr("Next")
 
-        enabled: Jsclient.enableBtnNext()
-        property int reqcount: 0
+        enabled: enableBtnNext(btnNext.Text.text)
 
         onClicked:
         {
             btnNext.enabled = false;
-            if(client.checkConnectivity(fieldIP.text)){
-                client.sndReqLicense(fieldLicense.text);
-            }else{
-                //errText2.text = client.err;
-                errText1.visible = true;
-                errText2.visible = false;
-            }
+
+            client.checkConnectivity(fieldIP.text,fieldLicense.text);
             btnNext.enabled = true;
         }
     }
 
+    function enableBtnNext(){
+        if((fieldIP.text !== "") && (fieldLicense.text !== "")){
+            return true;
+        }else{
+            return false;
+        }
+    }
     Text {
         id: text1
         x: 62
@@ -181,11 +246,11 @@ Window {
 
     }
 
-    Item {
-        id:printerlist
-        width:500
-        height:400
-    }
+//    Item {
+//        id:printerlist
+//        width:500
+//        height:400
+//    }
 
 
 

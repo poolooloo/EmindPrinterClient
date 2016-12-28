@@ -1,10 +1,7 @@
-function enableBtnNext(){
-    if((fieldIP.text !== "") && (fieldLicense.text !== "")){
-        return true;
-    }else{
-        return false;
-    }
-}
+.pragma library
+var g_str = "123";
+
+
 
 
 function travelList(obj){

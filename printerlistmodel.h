@@ -10,22 +10,23 @@
 class PrinterListModelPrivate;
 class PrinterListModel : public QAbstractListModel
 {
+    Q_OBJECT
 public:
     PrinterListModel(QObject* parent=0);
     ~PrinterListModel();
 
-    int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const ;
 
-    QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const ;
 
-    void addPrinterName(const QString& pname);
+    Q_INVOKABLE void addPrinterName(const QString& pname);
 
     Q_INVOKABLE void reload();
     Q_INVOKABLE void remove(int index);
 
 protected:
 
-    QHash<int,QByteArray> roleNames() const Q_DECL_OVERRIDE;
+    QHash<int,QByteArray> roleNames() const ;
 
 
 

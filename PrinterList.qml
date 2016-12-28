@@ -3,8 +3,10 @@ import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import com.client.emindprint 1.0
+import "client.js" as Jsclient
 
 Window {
+    objectName: "printerWin"
     id:printerlist
     maximumHeight: 400
     minimumHeight: 400
@@ -13,31 +15,48 @@ Window {
     visible:false
 
     title:qsTr("Add Remote Printers")
+    property string pnameStr1: ""
+    property var pNameList:[]
 
-    signal printerAdded(string prName)
-    property string printerName
+//    signal printerAdded(string prName)
+//    property string printerName
 
-    PrinterModel{
-        id:pModel
-
-    }
-
-    ClientLogin{
-        onShowPrinterWin: printerlist.show();
+//    PrinterListModel{
+//        id:pModel
+//    }
+    EmindClient{
+        id:client
     }
 
     Connections{
-        id:conn
-        onVisibleChaneged: printerlist.show();
+        target: printerlist
+        onShowList:{
+            var pname = new Array;
+            pname= Jsclient.g_str.split(',');
+            console.log(pname);
+            for(var i=0;i<pname.length;i++)
+                pModel.append({"prname":pname[i]});
+        }
+        onStopSpinner:{
+            busyIndicator.visible = false;
+            console.log("stop busyIndi");
+        }
     }
 
-    EmindClient{id:client}
+    ListModel{
+        id:pModel
 
-    Component.onCompleted: {
-        console.log("nice")
-        printerlist.printerAdded.connect(client.setDefaultPrinter)
+//test element
+//        ListElement{
+//            prname:"nice"
+//        }
+//        ListElement{
+//            prname:"nice"
+//        }
+//        ListElement{
+//            prname:"nice"
+//        }
     }
-
 
     ListView{
         id:pView
@@ -46,10 +65,23 @@ Window {
         delegate:pDelegate
         anchors.alignWhenCentered: true
         anchors.margins: 10
-
+        highlight: highlighter
     }
 
 
+    Component{
+        id:highlighter
+        Rectangle{
+            width: printerlist.width
+            height:60
+            MouseArea{
+                anchors.fill: parent
+                onHoveredChanged: parent.color = "#f5f5f5";
+            }
+
+
+        }
+    }
 
     Component{
         id:pDelegate
@@ -62,8 +94,8 @@ Window {
             Text{
                 id:printerName
                 anchors.alignWhenCentered : true
-                text:modelData
-                font.pixelSize: 22
+                text:prname
+                font.pixelSize: 18
             }
 
 
@@ -90,13 +122,12 @@ Window {
                 onClicked: {
                     busyIndicator.visible = true;
                     busyIndicator.running = true;
-                    printerAdded("item");
+                    client.setDefaultPrinter(printerName.text);
                 }
 
                 BusyIndicator {
                     id:busyIndicator
                     anchors.fill: parent
-//                    anchors.alignWhenCentered : true
                     width:45
                     height: 45
                     visible: false
