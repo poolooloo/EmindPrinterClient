@@ -29,7 +29,15 @@ DISTFILES += \
     org.emindprinter.serveice \
     cups/emindprinter \
     cups/emindprinterbackend \
-    cups/emindprinter.ppd
+    cups/emindprinter.ppd \
+    debian/emindprinter.postrm \
+    debian/source/format \
+    debian/compat \
+    debian/control \
+    debian/emindprinter.install \
+    debian/changelog \
+    debian/README.Debian \
+    debian/README.source
 
 HEADERS += \
     licensefactory.h \
@@ -39,6 +47,8 @@ HEADERS += \
     emindprintdbus.h \
     printerlistmodel.h \
     tcpthread.h \
-    protocol.h
+    protocol.h \
+    debian/emindprinter.postinst \
+    debian/rules
 
 TARGET = emindprinter

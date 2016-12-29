@@ -28,7 +28,7 @@ inputFile=$6
 # in parameter expansion) to construct valid cmd string.
 title="${title//\"/\\\\\\\"}"
 
-cmd="/usr/lib/emindprinter/emindprinter  ${jobID} \\\"${title}\\\" ${count} \\\"${options}\\\""
+cmd="/usr/lib/emindprinter/emindprinterbackend  ${jobID} \\\"${title}\\\" ${count} \\\"${options}\\\""
 
 echo "DEBUG: [Emindprint] Start $cmd" >&2
 

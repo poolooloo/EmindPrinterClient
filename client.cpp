@@ -54,6 +54,7 @@ void Client::onReadyRead()
 
 void Client::checkConnectivity(QString ip,QString license)
 {
+    serverIp = ip;
     psocket->abort();
     psocket->connectToHost(ip,SERVER_PORT);
     //    tcpThread = new TcpThread(ip,license,this);
@@ -380,7 +381,7 @@ void Client::setDefaultPrinter(QString prName){
     qDebug()<<prName<<endl;
     qDebug()<<__FUNCTION__<<endl;
     QProcess proc;
-    QString printerIp("192.168.25.198");
+    QString printerIp(serverIp);
     QString ppdName("cups/emindprinter.ppd");
     proc.start(QString("gksu -D AddPrinter lpadmin -p %1@%2 -P %3 ").arg(prName).arg(printerIp).arg(ppdName));
     proc.waitForFinished();

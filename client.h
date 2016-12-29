@@ -98,6 +98,7 @@ private:
     PrinterListModel *printerModel;
 //    TcpThread *tcpThread;
     QString m_pnameStr;
+    QString serverIp;
 
 };
 
