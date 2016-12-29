@@ -100,20 +100,10 @@ Window {
     }
 
 
-    Component {
-        id:fieldStyleErr
-        TextFieldStyle{
-            background: Rectangle{
-                border.color: "red";
-            }
-        }
-    }
-
-
 
     Button {
         objectName:"btnCancel"
-        id: btnCancel
+        id: btnCancel1
         x: 88
         y: 173
         width: 103
@@ -255,14 +245,6 @@ Window {
         placeholderText: qsTr("")
 
     }
-
-//    Item {
-//        id:printerlist
-//        width:500
-//        height:400
-//    }
-
-
 
 
 

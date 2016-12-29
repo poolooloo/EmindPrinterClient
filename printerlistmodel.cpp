@@ -37,7 +37,7 @@ PrinterListModel::~PrinterListModel()
 int PrinterListModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
-    qDebug()<<"m_list.count()"<<m_dptr->m_list.count();
+//    qDebug()<<"m_list.count()"<<m_dptr->m_list.count();
     return m_dptr->m_list.count();
 }
 
@@ -47,23 +47,23 @@ QVariant PrinterListModel::data(const QModelIndex &index, int role) const
     if(index.row()<0 || index.row() >= m_dptr->m_list.count()){
         return QVariant();
     }
-    qDebug()<<"role="<<role<<endl;
+//    qDebug()<<"role="<<role<<endl;
     return m_dptr->m_list.at(role-Qt::UserRole);
 }
 
 QHash<int,QByteArray> PrinterListModel::roleNames() const
 {
     qDebug()<<__FUNCTION__<<endl;
-    qDebug()<<"m_roleNames="<<m_dptr->m_roleNames<<endl;
+//    qDebug()<<"m_roleNames="<<m_dptr->m_roleNames<<endl;
     return m_dptr->m_roleNames;
 }
 
 void PrinterListModel::addPrinterName(const QString &prname)
 {
-    qDebug()<<"rowCount()="<<rowCount()<<"QModelIndex()"<<QModelIndex()<<endl;
+//    qDebug()<<"rowCount()="<<rowCount()<<"QModelIndex()"<<QModelIndex()<<endl;
     beginInsertRows(QModelIndex(),rowCount(),rowCount());
     m_dptr->m_list<<prname;
-    qDebug()<<"pname"<<prname<<endl;
+//    qDebug()<<"pname"<<prname<<endl;
     endInsertRows();
 }
 

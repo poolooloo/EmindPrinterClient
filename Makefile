@@ -33,7 +33,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = emindprinter1.0.0
-DISTDIR = /home/wufeiyun/ProjectEx/temp/emindprinter-1.0/.tmp/emindprinter1.0.0
+DISTDIR = /home/wufeiyun/ProjectEx/EmindPrint/.tmp/emindprinter1.0.0
 LINK          = g++
 LFLAGS        = -m64 -Wl,-O1
 LIBS          = $(SUBLIBS) -L/usr/X11R6/lib64 -lcups -lQt5Quick -lQt5PrintSupport -lQt5Widgets -lQt5Gui -lQt5Qml -lQt5Network -lQt5DBus -lQt5Core -lGL -lpthread 
@@ -54,9 +54,15 @@ SOURCES       = main.cpp \
 		cupsbackend.cpp \
 		printer.cpp \
 		emindprintdbus.cpp \
-		printerlistmodel.cpp qrc_qml.cpp \
+		printerlistmodel.cpp \
+		tcpthread.cpp qrc_qml.cpp \
+		moc_licensefactory.cpp \
 		moc_client.cpp \
-		moc_emindprintdbus.cpp
+		moc_cupsbackend.cpp \
+		moc_printer.cpp \
+		moc_emindprintdbus.cpp \
+		moc_printerlistmodel.cpp \
+		moc_tcpthread.cpp
 OBJECTS       = main.o \
 		licensefactory.o \
 		client.o \
@@ -64,9 +70,15 @@ OBJECTS       = main.o \
 		printer.o \
 		emindprintdbus.o \
 		printerlistmodel.o \
+		tcpthread.o \
 		qrc_qml.o \
+		moc_licensefactory.o \
 		moc_client.o \
-		moc_emindprintdbus.o
+		moc_cupsbackend.o \
+		moc_printer.o \
+		moc_emindprintdbus.o \
+		moc_printerlistmodel.o \
+		moc_tcpthread.o
 DIST          = CMakeList.txt \
 		org.emindprinter.serveice \
 		cups/emindprinter \
@@ -193,13 +205,16 @@ DIST          = CMakeList.txt \
 		cupsbackend.h \
 		printer.h \
 		emindprintdbus.h \
-		printerlistmodel.h main.cpp \
+		printerlistmodel.h \
+		tcpthread.h \
+		protocol.h main.cpp \
 		licensefactory.cpp \
 		client.cpp \
 		cupsbackend.cpp \
 		printer.cpp \
 		emindprintdbus.cpp \
-		printerlistmodel.cpp
+		printerlistmodel.cpp \
+		tcpthread.cpp
 QMAKE_TARGET  = emindprinter
 DESTDIR       = 
 TARGET        = emindprinter
@@ -479,8 +494,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents qml.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents licensefactory.h client.h cupsbackend.h printer.h emindprintdbus.h printerlistmodel.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp licensefactory.cpp client.cpp cupsbackend.cpp printer.cpp emindprintdbus.cpp printerlistmodel.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents licensefactory.h client.h cupsbackend.h printer.h emindprintdbus.h printerlistmodel.h tcpthread.h protocol.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp licensefactory.cpp client.cpp cupsbackend.cpp printer.cpp emindprintdbus.cpp printerlistmodel.cpp tcpthread.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -515,16 +530,37 @@ qrc_qml.cpp: qml.qrc \
 		ClientLogin.qml
 	/usr/lib/x86_64-linux-gnu/qt5/bin/rcc -name qml qml.qrc -o qrc_qml.cpp
 
-compiler_moc_header_make_all: moc_client.cpp moc_emindprintdbus.cpp
+compiler_moc_header_make_all: moc_licensefactory.cpp moc_client.cpp moc_cupsbackend.cpp moc_printer.cpp moc_emindprintdbus.cpp moc_printerlistmodel.cpp moc_tcpthread.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_client.cpp moc_emindprintdbus.cpp
-moc_client.cpp: client.h \
+	-$(DEL_FILE) moc_licensefactory.cpp moc_client.cpp moc_cupsbackend.cpp moc_printer.cpp moc_emindprintdbus.cpp moc_printerlistmodel.cpp moc_tcpthread.cpp
+moc_licensefactory.cpp: licensefactory.h \
 		/usr/lib/x86_64-linux-gnu/qt5/bin/moc
-	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/home/wufeiyun/ProjectEx/temp/emindprinter-1.0 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtQuick -I/usr/include/x86_64-linux-gnu/qt5/QtPrintSupport -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtQml -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtDBus -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include client.h -o moc_client.cpp
+	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/home/wufeiyun/ProjectEx/EmindPrint -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtQuick -I/usr/include/x86_64-linux-gnu/qt5/QtPrintSupport -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtQml -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtDBus -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include licensefactory.h -o moc_licensefactory.cpp
+
+moc_client.cpp: tcpthread.h \
+		client.h \
+		/usr/lib/x86_64-linux-gnu/qt5/bin/moc
+	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/home/wufeiyun/ProjectEx/EmindPrint -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtQuick -I/usr/include/x86_64-linux-gnu/qt5/QtPrintSupport -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtQml -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtDBus -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include client.h -o moc_client.cpp
+
+moc_cupsbackend.cpp: cupsbackend.h \
+		/usr/lib/x86_64-linux-gnu/qt5/bin/moc
+	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/home/wufeiyun/ProjectEx/EmindPrint -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtQuick -I/usr/include/x86_64-linux-gnu/qt5/QtPrintSupport -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtQml -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtDBus -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include cupsbackend.h -o moc_cupsbackend.cpp
+
+moc_printer.cpp: printer.h \
+		/usr/lib/x86_64-linux-gnu/qt5/bin/moc
+	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/home/wufeiyun/ProjectEx/EmindPrint -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtQuick -I/usr/include/x86_64-linux-gnu/qt5/QtPrintSupport -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtQml -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtDBus -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include printer.h -o moc_printer.cpp
 
 moc_emindprintdbus.cpp: emindprintdbus.h \
 		/usr/lib/x86_64-linux-gnu/qt5/bin/moc
-	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/home/wufeiyun/ProjectEx/temp/emindprinter-1.0 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtQuick -I/usr/include/x86_64-linux-gnu/qt5/QtPrintSupport -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtQml -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtDBus -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include emindprintdbus.h -o moc_emindprintdbus.cpp
+	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/home/wufeiyun/ProjectEx/EmindPrint -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtQuick -I/usr/include/x86_64-linux-gnu/qt5/QtPrintSupport -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtQml -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtDBus -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include emindprintdbus.h -o moc_emindprintdbus.cpp
+
+moc_printerlistmodel.cpp: printerlistmodel.h \
+		/usr/lib/x86_64-linux-gnu/qt5/bin/moc
+	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/home/wufeiyun/ProjectEx/EmindPrint -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtQuick -I/usr/include/x86_64-linux-gnu/qt5/QtPrintSupport -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtQml -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtDBus -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include printerlistmodel.h -o moc_printerlistmodel.cpp
+
+moc_tcpthread.cpp: tcpthread.h \
+		/usr/lib/x86_64-linux-gnu/qt5/bin/moc
+	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/home/wufeiyun/ProjectEx/EmindPrint -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtQuick -I/usr/include/x86_64-linux-gnu/qt5/QtPrintSupport -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtQml -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtDBus -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include tcpthread.h -o moc_tcpthread.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -541,15 +577,19 @@ compiler_clean: compiler_rcc_clean compiler_moc_header_clean
 ####### Compile
 
 main.o: main.cpp client.h \
+		tcpthread.h \
 		cupsbackend.h \
 		printer.h \
-		emindprintdbus.h
+		emindprintdbus.h \
+		printerlistmodel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 licensefactory.o: licensefactory.cpp licensefactory.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o licensefactory.o licensefactory.cpp
 
-client.o: client.cpp client.h
+client.o: client.cpp client.h \
+		tcpthread.h \
+		printerlistmodel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o client.o client.cpp
 
 cupsbackend.o: cupsbackend.cpp cupsbackend.h
@@ -559,20 +599,39 @@ printer.o: printer.cpp printer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o printer.o printer.cpp
 
 emindprintdbus.o: emindprintdbus.cpp emindprintdbus.h \
-		client.h
+		client.h \
+		tcpthread.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o emindprintdbus.o emindprintdbus.cpp
 
 printerlistmodel.o: printerlistmodel.cpp printerlistmodel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o printerlistmodel.o printerlistmodel.cpp
 
+tcpthread.o: tcpthread.cpp tcpthread.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tcpthread.o tcpthread.cpp
+
 qrc_qml.o: qrc_qml.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_qml.o qrc_qml.cpp
+
+moc_licensefactory.o: moc_licensefactory.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_licensefactory.o moc_licensefactory.cpp
 
 moc_client.o: moc_client.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_client.o moc_client.cpp
 
+moc_cupsbackend.o: moc_cupsbackend.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_cupsbackend.o moc_cupsbackend.cpp
+
+moc_printer.o: moc_printer.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_printer.o moc_printer.cpp
+
 moc_emindprintdbus.o: moc_emindprintdbus.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_emindprintdbus.o moc_emindprintdbus.cpp
+
+moc_printerlistmodel.o: moc_printerlistmodel.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_printerlistmodel.o moc_printerlistmodel.cpp
+
+moc_tcpthread.o: moc_tcpthread.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_tcpthread.o moc_tcpthread.cpp
 
 ####### Install
 
