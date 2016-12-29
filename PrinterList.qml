@@ -68,6 +68,17 @@ Window {
         highlight: highlighter
     }
 
+    EmindClient{
+        id:emclient
+        onPlistSent:{
+            console.log("test");
+            pnameStr1 = emclient.pnameStr;
+            console.log(pnameStr1);
+
+        }
+    }
+
+
 
     Component{
         id:highlighter

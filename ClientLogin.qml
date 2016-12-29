@@ -100,6 +100,16 @@ Window {
     }
 
 
+    Component {
+        id:fieldStyleErr
+        TextFieldStyle{
+            background: Rectangle{
+                border.color: "red";
+            }
+        }
+    }
+
+
 
     Button {
         objectName:"btnCancel"
