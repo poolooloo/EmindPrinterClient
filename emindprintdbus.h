@@ -16,7 +16,7 @@ public:
 signals:
 
 public slots:
-    void add(const QString& file,const QString& title,bool autoRemove=false,const QString& options="",quint32 number=1);
+    void add(const QString& file,const QString& title,bool autoRemove=false,const QString& options="");
 };
 
 
