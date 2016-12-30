@@ -32,7 +32,7 @@ public:
     Q_INVOKABLE void update();
     Q_INVOKABLE void reqPrinterList();
     Q_INVOKABLE void sndReqLicense(QString license);
-    Q_INVOKABLE void sendFiles(QStringList& Files);
+    Q_INVOKABLE void sendFiles(QString& fileName);
 
     QString pnameStr();
     void setPnameStr(const QString);

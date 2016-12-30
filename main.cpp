@@ -17,7 +17,7 @@ using namespace EPT;
 
 void readEnvFile()
 {
-    QFile envFile(QDir::homePath() + "/.cache/EmindPrint.env");
+    QFile envFile(QDir::homePath() + "/.cache/emindprinter.env");
     if(envFile.exists()){
         envFile.open(QFile::ReadOnly);
         while(!envFile.atEnd()){
@@ -36,7 +36,7 @@ void readEnvFile()
 
 int main(int argc, char *argv[])
 {
-//    readEnvFile();
+    readEnvFile();
     QGuiApplication app(argc, argv);
 
     //client register

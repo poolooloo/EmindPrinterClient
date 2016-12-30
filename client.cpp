@@ -209,9 +209,9 @@ QString Client::rcvMsg()
 }
 
 
-void Client::sendFiles(QStringList& Files)  //实现文件大小等信息的发送
+void Client::sendFiles(QString& fileName)  //实现文件大小等信息的发送
 {
-    foreach(auto fileName,Files){
+//    foreach(auto fileName,Files){
 
         localFile = new QFile(fileName);
         if(!localFile->open(QFile::ReadOnly))
@@ -219,7 +219,7 @@ void Client::sendFiles(QStringList& Files)  //实现文件大小等信息的发�
             qDebug() << "open file error!";
             return;
         }
-        fileName = localFile->fileName();
+//        fileName = localFile->fileName();
         totalBytes = localFile->size();   //获取待发送文件的大小并存储
         //文件总大小
         QDataStream sendOut(&outBlock,QIODevice::WriteOnly);  //将发送缓冲区封闭在一个QDataStream类型的变量中
@@ -274,7 +274,7 @@ void Client::sendFiles(QStringList& Files)  //实现文件大小等信息的发�
             psocket->close();
         }
 
-    }
+//    }
 }
 
 void Client::updateClientProgress(qint64 numBytes) //更新进度条，实现文件的传送
@@ -370,7 +370,7 @@ void Client::loadCupsFiles(const QStringList& fileNames,const QStringList& title
     qDebug()<<__FUNCTION__<<endl;
     emit rcvCupsFile();
     foreach(QString fileName,fileNames){
-        //        sendFiles(fileName);
+        sendFiles(fileName);
         qDebug()<<"fileName="<<endl;
         QMessageBox::information(0,"cups file rcv",tr("filename=%1").arg(fileName));
     }
