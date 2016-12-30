@@ -383,9 +383,11 @@ void Client::setDefaultPrinter(QString prName){
     QProcess proc;
     QString printerIp(serverIp);
     QString ppdName("cups/emindprinter.ppd");
-    proc.start(QString("gksu -D AddPrinter lpadmin -p %1@%2 -P %3 ").arg(prName).arg(printerIp).arg(ppdName));
-    proc.waitForFinished();
+//    proc.start(QString("gksu -D AddPrinter lpadmin -p %1@%2 -P %3 ").arg(prName).arg(printerIp).arg(ppdName));
+    proc.start(QString("gksu -D AddPrinter -P  lpadmin  -p emindprinter-3 -v emindprinter:/ -P lsb/usr/emindprinter/emindprinter.ppd"));
     emit printerSetFinished();
+    proc.waitForFinished();
+
 
 }
 
