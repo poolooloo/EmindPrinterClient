@@ -84,6 +84,14 @@ DIST          = CMakeList.txt \
 		cups/emindprinter \
 		cups/emindprinterbackend \
 		cups/emindprinter.ppd \
+		debian/emindprinter.postrm \
+		debian/source/format \
+		debian/compat \
+		debian/control \
+		debian/emindprinter.install \
+		debian/changelog \
+		debian/README.Debian \
+		debian/README.source \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -207,7 +215,9 @@ DIST          = CMakeList.txt \
 		emindprintdbus.h \
 		printerlistmodel.h \
 		tcpthread.h \
-		protocol.h main.cpp \
+		protocol.h \
+		debian/emindprinter.postinst \
+		debian/rules main.cpp \
 		licensefactory.cpp \
 		client.cpp \
 		cupsbackend.cpp \
@@ -494,7 +504,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents qml.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents licensefactory.h client.h cupsbackend.h printer.h emindprintdbus.h printerlistmodel.h tcpthread.h protocol.h $(DISTDIR)/
+	$(COPY_FILE) --parents licensefactory.h client.h cupsbackend.h printer.h emindprintdbus.h printerlistmodel.h tcpthread.h protocol.h debian/emindprinter.postinst debian/rules $(DISTDIR)/
 	$(COPY_FILE) --parents main.cpp licensefactory.cpp client.cpp cupsbackend.cpp printer.cpp emindprintdbus.cpp printerlistmodel.cpp tcpthread.cpp $(DISTDIR)/
 
 
@@ -636,13 +646,13 @@ moc_tcpthread.o: moc_tcpthread.cpp
 ####### Install
 
 install_target: first FORCE
-	@test -d $(INSTALL_ROOT)/opt/EmindPrint/bin || mkdir -p $(INSTALL_ROOT)/opt/EmindPrint/bin
-	-$(INSTALL_PROGRAM) $(QMAKE_TARGET) $(INSTALL_ROOT)/opt/EmindPrint/bin/$(QMAKE_TARGET)
-	-$(STRIP) $(INSTALL_ROOT)/opt/EmindPrint/bin/$(QMAKE_TARGET)
+	@test -d $(INSTALL_ROOT)/usr/bin || mkdir -p $(INSTALL_ROOT)/usr/bin
+	-$(INSTALL_PROGRAM) $(QMAKE_TARGET) $(INSTALL_ROOT)/usr/bin/$(QMAKE_TARGET)
+	-$(STRIP) $(INSTALL_ROOT)/usr/bin/$(QMAKE_TARGET)
 
 uninstall_target: FORCE
-	-$(DEL_FILE) $(INSTALL_ROOT)/opt/EmindPrint/bin/$(QMAKE_TARGET)
-	-$(DEL_DIR) $(INSTALL_ROOT)/opt/EmindPrint/bin/ 
+	-$(DEL_FILE) $(INSTALL_ROOT)/usr/bin/$(QMAKE_TARGET)
+	-$(DEL_DIR) $(INSTALL_ROOT)/usr/bin/ 
 
 
 install: install_target  FORCE
