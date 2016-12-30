@@ -20,17 +20,18 @@ set -e
 case "$1" in
 	configure)
 		# Remove lint from possible upgrades.
-        rm -rf /var/spool/emindprinter/SPOOL
+        #rm -rf /var/spool/emindprinter/SPOOL
 		# Sanitize ownerships and permissions.
 		chmod 0700 /usr/lib/cups/backend/emindprinter
         if ! [ -f /var/log/cups/emindprinter_log ]
-        then
-                       touch /var/log/cups/emindprinter_log
-        fi
-        chown -R root:lpadmin /var/log/cups
-        chmod 0640 /var/log/cups/emindprinter_log*
-        chown root:lpadmin /var/spool/emindprinter/ANONYMOUS
-        chmod 1777 /var/spool/emindprinter/ANONYMOUS
+        #then
+                       #touch /var/log/cups/emindprinter_log
+        #fi
+        #chown -R root:lpadmin /var/log/cups
+        #chmod 0640 /var/log/cups/emindprinter_log*
+
+        #chown root:lpadmin /var/spool/emindprinter/ANONYMOUS
+        #chmod 1777 /var/spool/emindprinter/ANONYMOUS
 		# Ensure that CUPS is running before we manipulate its queues.
 		if [ -f /etc/init.d/cups ]
 		then
