@@ -1,7 +1,7 @@
 #!/bin/sh
-# [postinst] for boomaga
+# [postinst] for emindprinter
 # COPYRIGHT
-# © 2012-2013 Boomaga team https://github.com/Boomaga/boomaga
+# © 2012-2013 emindprinter team https://github.com/emindprinter/emindprinter
 #    Alexander Sokoloff <sokoloff.a@gmail.com>
 #
 # Based on [postinst] for cups-pdf
@@ -20,17 +20,17 @@ set -e
 case "$1" in
 	configure)
 		# Remove lint from possible upgrades.
-		#rm -rf /var/spool/boomaga/SPOOL
+                #rm -rf /var/spool/emindprinter/SPOOL
 		# Sanitize ownerships and permissions.
-		chmod 0700 /usr/lib/cups/backend/boomaga
-		#if ! [ -f /var/log/cups/boomaga_log ]
+                chmod 0700 /usr/lib/cups/backend/emindprinter
+                #if ! [ -f /var/log/cups/emindprinter_log ]
 		#then
-                #        touch /var/log/cups/boomaga_log
+                #        touch /var/log/cups/emindprinter_log
 		#fi
 		#chown -R root:lpadmin /var/log/cups
-		#chmod 0640 /var/log/cups/boomaga_log*
-		#chown root:lpadmin /var/spool/boomaga/ANONYMOUS
-		#chmod 1777 /var/spool/boomaga/ANONYMOUS
+                #chmod 0640 /var/log/cups/emindprinter_log*
+                #chown root:lpadmin /var/spool/emindprinter/ANONYMOUS
+                #chmod 1777 /var/spool/emindprinter/ANONYMOUS
 		# Ensure that CUPS is running before we manipulate its queues.
 		if [ -f /etc/init.d/cups ]
 		then
@@ -49,20 +49,20 @@ case "$1" in
 			done
 		fi
 	        # Create a queue if we have none yet.
-		if [ -z "$(LC_ALL=C lpstat -h localhost -v 2>/dev/null | grep 'boomaga:/')" ]
+                if [ -z "$(LC_ALL=C lpstat -h localhost -v 2>/dev/null | grep 'emindprinter:/')" ]
 		then
 			# 1) Find a name for the queue.
-			queue=Boomaga
+                        queue=emindprinter
 			number=0
 			while $(LC_ALL=C lpstat -h localhost -v 2>/dev/null | cut -d ':' -f 1 | cut -d ' ' -f 3 | grep -q ^$queue\$)
 			do
 				number=$(($number + 1))
-				queue="Boomaga-$number"
+                                queue="emindprinter-$number"
 			done
 			# 2) Find the default paper size.
 			size="$(LC_ALL=C paperconf 2>/dev/null)" || size=a4
 			# 3) Create the queue.
-			echo | lpadmin -h localhost -p $queue -v boomaga:/ -m lsb/usr/boomaga/boomaga.ppd -o printer-is-shared=no -o PageSize=$size 2>/dev/null || :
+                        echo | lpadmin -h localhost -p $queue -v emindprinter:/ -m lsb/usr/emindprinter/emindprinter.ppd -o printer-is-shared=no -o PageSize=$size 2>/dev/null || :
 			# 4) Enable the queue.
 			echo | cupsenable -h localhost $queue 2>/dev/null || :
 			echo | cupsaccept -h localhost $queue 2>/dev/null || :
