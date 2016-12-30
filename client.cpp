@@ -361,7 +361,7 @@ void Client::printerName() const
 
 void Client::load(const QString &fileName,const QString &title,const QString &options,bool autoRemove)
 {
-
+    qDebug()<<__FUNCTION__<<endl;
     loadCupsFiles(QStringList()<<fileName,QStringList()<<title,options,autoRemove);
 }
 

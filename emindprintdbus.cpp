@@ -18,6 +18,7 @@ EmindPrintDbus::~EmindPrintDbus()
 
 void EmindPrintDbus::add(const QString &file, const QString &title, bool autoRemove ,const QString &options)
 {
+    qDebug()<<__FUNCTION__<<endl;
     client->load(file,title,options,autoRemove);
 }
 
