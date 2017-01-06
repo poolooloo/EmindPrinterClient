@@ -12,6 +12,8 @@
 #include <QtQuick/QQuickItem>
 #include "emindprintdbus.h"
 #include "printerlistmodel.h"
+QGuiApplication *app111=NULL;
+
 
 using namespace EPT;
 
@@ -38,6 +40,7 @@ int main(int argc, char *argv[])
 {
     readEnvFile();
     QGuiApplication app(argc, argv);
+        app111 = &app;
 
     //client register
     qmlRegisterType<Client>("com.client.emindprint",1,0,"EmindClient");
@@ -62,7 +65,7 @@ int main(int argc, char *argv[])
 //    ctx->setContextProperty("printModel",new PrinterListModel());
 //    engine.load(QUrl(QStringLiteral("qrc:/PrinterList.qml")));
 
-    new Client(root);
+      //new Client(root);
 //    QObject* txErr = root->findChild<QObject*>("btnNext");
 //    if(txErr){
 //        QObject::connect(txErr,SIGNAL(clicked()),&app,SLOT(quit()));

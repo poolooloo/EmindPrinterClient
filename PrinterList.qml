@@ -66,18 +66,8 @@ Window {
         anchors.alignWhenCentered: true
         anchors.margins: 10
         highlight: highlighter
+
     }
-
-    EmindClient{
-        id:emclient
-        onPlistSent:{
-            console.log("test");
-            pnameStr1 = emclient.pnameStr;
-            console.log(pnameStr1);
-
-        }
-    }
-
 
 
     Component{
@@ -133,7 +123,10 @@ Window {
                 onClicked: {
                     busyIndicator.visible = true;
                     busyIndicator.running = true;
-                    client.setDefaultPrinter(printerName.text);
+                    console.log(pView.currentIndex);
+                    client.setDefaultPrinter(printerName.text,pView.currentIndex);
+//                    busyIndicator.visible = false;
+//                    busyIndicator.running = false;
                 }
 
                 BusyIndicator {

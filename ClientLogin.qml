@@ -68,6 +68,10 @@ Window {
         onPrinterSetFinished:{
             pWin.stopSpinner();
         }
+        onStopIndicator:{
+            console.log("stop indicator");
+            pWin.stopSpinner();
+        }
 
     }
 

@@ -12,6 +12,8 @@ class QTcpSocket;
 class PrinterListModel;
 namespace EPT {
 
+
+class ClientPrive;
 class Client : public QObject
 {
     Q_OBJECT
@@ -27,6 +29,7 @@ public:
     ~Client();
 
     static Client* instance();
+    ClientPrive* priver;
     enum ServerError{ IpError,LicenseError};
 
     Q_INVOKABLE void update();
@@ -47,6 +50,8 @@ public:
     void sndMsg(QString msgStr);
     QString rcvMsg();
     void checkConnect();
+
+
 //    void setPNameListModel(QStringList modellist);
 //    QStringListModel getPNameListModel();
 
@@ -63,9 +68,10 @@ signals:
     void pnameStrChanged();
     void plistSent();
     void printerSetFinished();
+    void stopIndicator();
 
 public slots:
-    void setDefaultPrinter(QString prName);
+    void setDefaultPrinter(QString prName,quint16 pIndex);
     void getPrinterNameList(QString& msg);
     Q_INVOKABLE void checkConnectivity(QString ip,QString license);
     void checkLicense();
@@ -90,15 +96,17 @@ private:
     quint16 blockSize;
 
     QString message;
+    int authflags = 0;
 
     QString m_err;
     QStringList m_plist;
     QStringListModel m_pnamelistModel;
 
     PrinterListModel *printerModel;
-//    TcpThread *tcpThread;
+ //    TcpThread *tcpThread;
     QString m_pnameStr;
-    QString serverIp;
+//    QString serverIp;
+    quint16 printerNo;
 
 };
 

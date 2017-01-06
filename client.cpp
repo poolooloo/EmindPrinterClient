@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QProcess>
 #include "printerlistmodel.h"
+#include <QGuiApplication>
 
 
 namespace EPT {
@@ -10,24 +11,44 @@ namespace EPT {
 const QString AUTH_CODE = "emind";
 const quint16 SERVER_PORT = 6666;
 
+class ClientPrive : public QObject {
+
+
+private:
+    ClientPrive(){};
+
+  public:
+    static ClientPrive *instance();
+
+    QString serverIp;
+    QString autstr;
+};
+
+ClientPrive* ClientPrive::instance()
+{
+    static ClientPrive *inst = 0;
+    if(!inst)
+        inst = new ClientPrive();
+    return inst;
+}
 
 Client::Client(QObject *parent) : QObject(parent)
 {
+    priver= ClientPrive::instance();
+
     psocket = new QTcpSocket();
+
     connect(psocket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(displayError(QAbstractSocket::SocketError)));
     //    connect(psocket,SIGNAL(readyRead()),this,SLOT(onReadyRead()));
-    connect(psocket,SIGNAL(readyRead()),this,SLOT(checkLicense()));
+    //connect(psocket,SIGNAL(readyRead()),this,SLOT(checkLicense()));
 
     loadSize = 4*1024;
     totalBytes = 0;
     bytesWritten = 0;
     bytesToWrite = 0;
+    printerModel = new PrinterListModel();
 
-    printerModel = new PrinterListModel(this);
     blockSize = 0;
-
-
-
 }
 
 Client::~Client()
@@ -51,17 +72,30 @@ void Client::onReadyRead()
 
 }
 
-
+extern QGuiApplication *app111;
 void Client::checkConnectivity(QString ip,QString license)
 {
-    serverIp = ip;
+    if (priver->serverIp.isEmpty())
+        priver->serverIp = ip;
+
+    if (priver->autstr.isEmpty())
+        priver->autstr = license;
+
     psocket->abort();
+
+    qDebug()<<"ipstr111=="<<priver->serverIp;
+    qDebug()<<"autstr22222=="<<priver->autstr;
+    qint64 pid=app111->applicationPid();
+    qDebug()<<"pid"<<pid<<endl;
+    qDebug()<< __FUNCTION__ <<"this"<<this;
     psocket->connectToHost(ip,SERVER_PORT);
     //    tcpThread = new TcpThread(ip,license,this);
 
     if(psocket->waitForConnected(1000))
         //        sndReqLicense(license);
         sndMsg(license);
+    if (psocket->waitForReadyRead())
+        checkLicense();
 }
 
 void Client::sndReqLicense(QString license)
@@ -97,10 +131,14 @@ void Client::sndReqLicense(QString license)
 void Client::checkLicense()
 {
     QString rmsg=rcvMsg();
+
     if(!rmsg.isNull())
     {
         if((rmsg.length()<5)&& (rmsg == "OK")){
+            connect(psocket,SIGNAL(readyRead()),this,SLOT(checkLicense()));
             emit sigConnected();
+                qDebug() << "checkLicense     |" << rmsg << "    |"<< endl;
+
             reqPrinterList();
         }
         else if(rmsg == "AUTH WRONG"){
@@ -108,6 +146,7 @@ void Client::checkLicense()
             emit sigAuthWrong();
         }else{
             getPrinterNameList(rmsg);
+            qDebug() << "getPrinterNameList" << endl;
         }
     }else{
 
@@ -182,6 +221,10 @@ void Client::sndMsg(QString msgStr)
     out.device()->seek(0);
     out<<(quint16)(authblock.size() - sizeof(quint16));
     psocket->write(authblock);
+    qDebug() << "________________________";
+    qDebug() << msgStr << endl;
+    qDebug() << authblock << endl;
+    qDebug() << "________________________";
     psocket->flush();
 }
 
@@ -208,9 +251,12 @@ QString Client::rcvMsg()
     return message;
 }
 
-
+extern QGuiApplication *app111;
 void Client::sendFiles(QString& fileName)  //实现文件大小等信息的发送
 {
+
+    sndMsg("begin send file");
+        qDebug()<< __FUNCTION__ <<"this"<<this;
 //    foreach(auto fileName,Files){
 
         localFile = new QFile(fileName);
@@ -242,39 +288,10 @@ void Client::sendFiles(QString& fileName)  //实现文件大小等信息的发�
         bytesToWrite = totalBytes - psocket->write(outBlock);
         //发送完头数据后剩余数据的大小，即文件实际内容的大小
         outBlock.resize(0);
-        qDebug()<<"#####"<<totalBytes;
+        qDebug()<<"#####totalBytes"<<totalBytes;
 
-        ///////////////////////////////////////////////
-        qDebug()<<"#######已发送："<<bytesWritten<<"剩余："<<bytesToWrite;
-        bytesWritten += outBlock.size();
-        //已经发送数据的大小
-        if(bytesToWrite > 0) //如果已经发送了数据
-        {
-            qDebug()<<"bytesToWrite > 0"<<endl;
-            //初始化时loadSize = 64*1024;qMin为返回参数中较小的值，每次最多发送64K的大小
-            outBlock = localFile->read(qMin(bytesToWrite,loadSize));
-            //每次发送loadSize大小的数据，这里设置为4KB，如果剩余的数据不足4KB，
-            //就发送剩余数据的大小
-            bytesToWrite -= (int)psocket->write(outBlock);
-            //发送完一次数据后还剩余数据的大小
-            outBlock.resize(0);
-            //清空发送缓冲区
-        }
-        else
-        {
-            qDebug()<<"bytesToWrite <0"<<endl;
+        connect(psocket,SIGNAL(bytesWritten(qint64)),this,SLOT(updateClientProgress(qint64)));
 
-            localFile->close(); //如果没有发送任何数据，则关闭文件
-        }
-
-        if(bytesWritten == totalBytes) //发送完毕
-        {
-            qDebug()<<"bytesWritten == totalBytes"<<endl;
-            localFile->close();
-            psocket->close();
-        }
-
-//    }
 }
 
 void Client::updateClientProgress(qint64 numBytes) //更新进度条，实现文件的传送
@@ -304,7 +321,10 @@ void Client::updateClientProgress(qint64 numBytes) //更新进度条，实现文
 
     if(bytesWritten == totalBytes) //发送完毕
     {
+
         qDebug()<<"bytesWritten == totalBytes"<<endl;
+        bytesWritten=0;
+        totalBytes=0;
         localFile->close();
         psocket->close();
     }
@@ -369,19 +389,35 @@ void Client::loadCupsFiles(const QStringList& fileNames,const QStringList& title
 {
     qDebug()<<__FUNCTION__<<endl;
     emit rcvCupsFile();
+   // if(authflags==1)
+    {
+qDebug()<<"ipstr=="<<priver->serverIp;
+qDebug()<<"autstr=="<<priver->autstr;
+        Client::checkConnectivity(priver->serverIp,priver->autstr);
+
+
+    }
+    qDebug()<<"**************************";
+
     foreach(QString fileName,fileNames){
         sendFiles(fileName);
-        qDebug()<<"fileName="<<endl;
-        QMessageBox::information(0,"cups file rcv",tr("filename=%1").arg(fileName));
+        authflags = 1;
+        qDebug()<<__FUNCTION__<<"fileName="<<fileName<<endl;
+      //  QMessageBox::information(0,"cups file rcv",tr("filename=%1").arg(fileName));
     }
 }
 
 
-void Client::setDefaultPrinter(QString prName){
+void Client::setDefaultPrinter(QString prName,quint16 pIndex){
+
+    emit stopIndicator();  //stop qml indicator
+//    sndMsg("DefaultPrinter");
+//    sndMsg(pIndex+"");
+    qDebug()<<"DefaultPrinter pIndex="<<pIndex<<endl;
     qDebug()<<prName<<endl;
     qDebug()<<__FUNCTION__<<endl;
     QProcess proc;
-    QString printerIp(serverIp);
+    QString printerIp(priver->serverIp);
     QString ppdName("cups/emindprinter.ppd");
 //    proc.start(QString("gksu -D AddPrinter lpadmin -p %1@%2 -P %3 ").arg(prName).arg(printerIp).arg(ppdName));
     proc.start(QString("gksu -D AddPrinter -P  lpadmin  -p emindprinter-3 -v emindprinter:/ -P lsb/usr/emindprinter/emindprinter.ppd"));
