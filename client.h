@@ -35,7 +35,7 @@ public:
     Q_INVOKABLE void update();
     Q_INVOKABLE void reqPrinterList();
     Q_INVOKABLE void sndReqLicense(QString license);
-    Q_INVOKABLE void sendFiles(QString& fileName);
+    Q_INVOKABLE void sendFiles(QString fileName);
 
     QString pnameStr();
     void setPnameStr(const QString);
@@ -71,7 +71,7 @@ signals:
     void stopIndicator();
 
 public slots:
-    void setDefaultPrinter(QString prName,quint16 pIndex);
+    void setDefaultPrinter(QString prName,quint32 pIndex);
     void getPrinterNameList(QString& msg);
     Q_INVOKABLE void checkConnectivity(QString ip,QString license);
     void checkLicense();
@@ -81,7 +81,9 @@ public slots:
 
 
 private:
-    QTcpSocket *psocket;
+//    static QTcpSocket *psocket;
+//    Client(){}
+//    static Client* emClient;
 
     quint16 inDataSize;
 

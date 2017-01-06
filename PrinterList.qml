@@ -18,15 +18,17 @@ Window {
     property string pnameStr1: ""
     property var pNameList:[]
 
+//    signal setDefaultPrinter(var text,var idx)
+
 //    signal printerAdded(string prName)
 //    property string printerName
 
 //    PrinterListModel{
 //        id:pModel
 //    }
-    EmindClient{
-        id:client
-    }
+//    EmindClient{
+//        id:client
+//    }
 
     Connections{
         target: printerlist
@@ -37,10 +39,7 @@ Window {
             for(var i=0;i<pname.length;i++)
                 pModel.append({"prname":pname[i]});
         }
-        onStopSpinner:{
-            busyIndicator.visible = false;
-            console.log("stop busyIndi");
-        }
+
     }
 
     ListModel{
@@ -84,6 +83,8 @@ Window {
         }
     }
 
+
+
     Component{
         id:pDelegate
 
@@ -123,8 +124,8 @@ Window {
                 onClicked: {
                     busyIndicator.visible = true;
                     busyIndicator.running = true;
-                    console.log(pView.currentIndex);
-                    client.setDefaultPrinter(printerName.text,pView.currentIndex);
+//                    console.log("index=",index);
+                      client.setDefaultPrinter(printerName.text,index);
 //                    busyIndicator.visible = false;
 //                    busyIndicator.running = false;
                 }
@@ -136,6 +137,28 @@ Window {
                     height: 45
                     visible: false
                     running: false
+                    Timer{
+                        id:timer
+                        interval: 1000
+                        running: true
+                        repeat: true
+                        onTriggered:
+                        {
+                            busyIndicator.visible = false;
+                            busyIndicator.running = false;
+                        }
+                    }
+
+                    Connections{
+                        target: printerlist
+                        onStopSpinner:{
+                            console.log("stop busyIndicator");
+                            timer.start();
+
+                        }
+                    }
+
+
                 }
             }
 

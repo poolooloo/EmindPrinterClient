@@ -15,38 +15,16 @@ ApplicationWindow {
     minimumHeight: 240
     maximumWidth: 400
     minimumWidth: 400
-//    StackView{
-//        id:stackWin
-//        initialItem: clientWin
-//    }
 
-//    Component{
-//        id:clientWin
-//        ClientLogin{
-//            width: 400
-//            height: 240
-//            visible: true
-//            onShowPrinterWin: {
-
-//            }
-//        }
-//    }
-
-//    Component{
-//        id:printerWin
-//        PrinterList{
-
-//        }
-//    }
-
-//    Component.onCompleted: {
-//        var mainWin = clientWin.createObject(root);
-//        mainWin.show();
-//    }
 
     Loader{
         id:mainWin
     }
+
+//    Loader{
+//        id:pWin
+//        source: "qrc:/PrinterList.qml"
+//    }
 
     Component.onCompleted: {
         mainWin.source = "ClientLogin.qml";

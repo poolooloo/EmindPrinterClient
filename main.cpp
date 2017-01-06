@@ -12,6 +12,7 @@
 #include <QtQuick/QQuickItem>
 #include "emindprintdbus.h"
 #include "printerlistmodel.h"
+
 QGuiApplication *app111=NULL;
 
 
@@ -61,37 +62,6 @@ int main(int argc, char *argv[])
         }
     }
 
-//    QQmlContext *ctx = engine.rootContext();
-//    ctx->setContextProperty("printModel",new PrinterListModel());
-//    engine.load(QUrl(QStringLiteral("qrc:/PrinterList.qml")));
-
-      //new Client(root);
-//    QObject* txErr = root->findChild<QObject*>("btnNext");
-//    if(txErr){
-//        QObject::connect(txErr,SIGNAL(clicked()),&app,SLOT(quit()));
-//    }
-
-//    QObject* txErr1 = root->findChild<QObject*>("errText1");
-//    if(txErr1){
-//        bool bRet = QMetaObject::invokeMethod(txErr1,"setText",Q_ARG(QString,"connecting error"));
-//        txErr1->setProperty("Text",QObject::tr("error error"));
-//        bRet = QMetaObject::invokeMethod(txErr1,"doLayout");
-//    }
-
-//    //modeldata
-//    QStringList dataList;
-//    dataList.append("Item 1");
-//    dataList.append("Item 2");
-//    dataList.append("Item 3");
-//    QQmlEngine eng;
-//    QStringListModel modelData;
-//    QQmlContext *ctxt = new QQmlContext(eng.rootContext());
-//    ctxt->setContextProperty("pModel",QVariant::fromValue(dataList));
-//    QQmlComponent component(&eng,"qrc:/PrinterList.qml");
-//    component.create(ctxt);
-
-
-
 
     //to handle cups files
     QStringList files;
@@ -118,7 +88,7 @@ int main(int argc, char *argv[])
 
     app.processEvents();
 
-    client->loadCupsFiles(files,titles,"",autoRemove);
+    Client::instance()->loadCupsFiles(files,titles,"",autoRemove);
 
     return app.exec();
 }

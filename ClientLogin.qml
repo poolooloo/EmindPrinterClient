@@ -26,6 +26,7 @@ Window {
 
     signal showPrinterWin()
 
+
     PrinterList{
         id:pWin
         signal showList()
@@ -69,7 +70,7 @@ Window {
             pWin.stopSpinner();
         }
         onStopIndicator:{
-            console.log("stop indicator");
+//            console.log("stop indicator");
             pWin.stopSpinner();
         }
 

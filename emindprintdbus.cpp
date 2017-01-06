@@ -7,7 +7,6 @@ namespace EPT {
 
 EmindPrintDbus::EmindPrintDbus(const QString &serviceName,const QString &dbusPath) : QObject()
 {
-    qDebug()<<__FUNCTION__<<endl;
     if(QDBusConnection::sessionBus().registerService(serviceName)){
         qDebug()<<"dbus registerService success"<<endl;
     }else{
@@ -28,7 +27,7 @@ EmindPrintDbus::~EmindPrintDbus()
 void EmindPrintDbus::add(const QString &file, const QString &title, bool autoRemove ,const QString &options)
 {
     qDebug()<<__FUNCTION__<<endl;
-    client->load(file,title,options,autoRemove);
+    Client::instance()->load(file,title,options,autoRemove);
 }
 
 
