@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 
     app.processEvents();
 
-    Client::instance()->loadCupsFiles(files,titles,"",autoRemove);
+    client->loadCupsFiles(files,titles,"",autoRemove);
 
     return app.exec();
 }

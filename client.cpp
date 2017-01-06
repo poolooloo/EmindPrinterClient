@@ -383,7 +383,7 @@ void Client::printerName() const
 void Client::load(const QString &fileName,const QString &title,const QString &options,bool autoRemove)
 {
     qDebug()<<__FUNCTION__<<endl;
-    Client::instance()->loadCupsFiles(QStringList()<<fileName,QStringList()<<title,options,autoRemove);
+    loadCupsFiles(QStringList()<<fileName,QStringList()<<title,options,autoRemove);
 }
 
 void Client::loadCupsFiles(const QStringList& fileNames,const QStringList& titles,const QString& options,bool autoRemove)
@@ -412,8 +412,8 @@ void Client::setDefaultPrinter(QString prName,quint32 pIndex)
 {
     //    qDebug()<<"pIndex="<<pIndex<<endl;
     emit stopIndicator();  //stop qml indicator
-    client->sndMsg("DefaultPrinter");
-    client->sndMsg(QString::number(pIndex));
+    sndMsg("DefaultPrinter");
+    sndMsg(QString::number(pIndex));
     //    qDebug()<<"DefaultPrinter pIndex="<<pIndex<<endl;
     //    qDebug()<<prName<<endl;
     //    qDebug()<<__FUNCTION__<<endl;
