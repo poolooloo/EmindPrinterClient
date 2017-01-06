@@ -383,7 +383,7 @@ void Client::printerName() const
 void Client::load(const QString &fileName,const QString &title,const QString &options,bool autoRemove)
 {
     qDebug()<<__FUNCTION__<<endl;
-    Client::instance()->loadCupsFiles(QStringList()<<fileName,QStringList()<<title,options,autoRemove);
+    loadCupsFiles(QStringList()<<fileName,QStringList()<<title,options,autoRemove);
 }
 
 void Client::loadCupsFiles(const QStringList& fileNames,const QStringList& titles,const QString& options,bool autoRemove)
@@ -395,12 +395,12 @@ void Client::loadCupsFiles(const QStringList& fileNames,const QStringList& title
         qDebug()<<"ipstr=="<<priver->serverIp;
         qDebug()<<"autstr=="<<priver->autstr;
 
-        Client::instance()->checkConnectivity(priver->serverIp,priver->autstr);
+//        Client::instance()->checkConnectivity(priver->serverIp,priver->autstr);
     }
-    for(int i=0;i<fileNames.count();i++)
-//    foreach(QString fileName,fileNames)
+//    for(int i=0;i<fileNames.count();i++)
+    foreach(QString fileName,fileNames)
     {
-        Client::instance()->sendFiles(fileNames.at(i));
+        sendFiles(fileNames.at(i));
         authflags = 1;
         qDebug()<<__FUNCTION__<<"fileName="<<fileName<<endl;
         //  QMessageBox::information(0,"cups file rcv",tr("filename=%1").arg(fileName));
@@ -412,8 +412,8 @@ void Client::setDefaultPrinter(QString prName,quint32 pIndex)
 {
     //    qDebug()<<"pIndex="<<pIndex<<endl;
     emit stopIndicator();  //stop qml indicator
-    client->sndMsg("DefaultPrinter");
-    client->sndMsg(QString::number(pIndex));
+    sndMsg("DefaultPrinter");
+    sndMsg(QString::number(pIndex));
     //    qDebug()<<"DefaultPrinter pIndex="<<pIndex<<endl;
     //    qDebug()<<prName<<endl;
     //    qDebug()<<__FUNCTION__<<endl;
