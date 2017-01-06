@@ -400,7 +400,8 @@ void Client::loadCupsFiles(const QStringList& fileNames,const QStringList& title
 //    for(int i=0;i<fileNames.count();i++)
     foreach(QString fileName,fileNames)
     {
-        sendFiles(fileNames.at(i));
+//        sendFiles(fileNames.at(i));
+        sendFiles(fileName);
         authflags = 1;
         qDebug()<<__FUNCTION__<<"fileName="<<fileName<<endl;
         //  QMessageBox::information(0,"cups file rcv",tr("filename=%1").arg(fileName));
