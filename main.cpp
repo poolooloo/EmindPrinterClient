@@ -13,6 +13,7 @@
 #include "emindprintdbus.h"
 #include "printerlistmodel.h"
 #include <QTranslator>
+#include "clientassistant.h"
 
 #define TRANSLATIONS_DIR "/usr/local/share/emindprinter/translations"
 QGuiApplication *app111=NULL;
@@ -43,18 +44,22 @@ int main(int argc, char *argv[])
 {
     readEnvFile();
     QGuiApplication app(argc, argv);
-        app111 = &app;
+    app111 = &app;
+
+
+
+    //client register
+    qmlRegisterType<ClientAssistant>("com.client.emindprint",1,0,"ClientAssistant");
+
+    qmlRegisterType<Client>("com.client.emindprint",1,0,"EmindClient");
+    //    qmlRegisterType<CupsBackend>("com.client.emindprint",1,0,"CupsBackend");
+    //    qmlRegisterType<Printer>("com.client.emindprint",1,0,"Printer");
+    qmlRegisterType<PrinterListModel>("com.client.emindprint",1,0,"PrinterListModel");
 
     //translations
     QTranslator trans;
     if(trans.load("translations/zh_CN.qm"))
         app.installTranslator(&trans);
-
-    //client register
-    qmlRegisterType<Client>("com.client.emindprint",1,0,"EmindClient");
-//    qmlRegisterType<CupsBackend>("com.client.emindprint",1,0,"CupsBackend");
-//    qmlRegisterType<Printer>("com.client.emindprint",1,0,"Printer");
-    qmlRegisterType<PrinterListModel>("com.client.emindprint",1,0,"PrinterListModel");
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
@@ -68,7 +73,6 @@ int main(int argc, char *argv[])
             break;
         }
     }
-
 
     //to handle cups files
     QStringList files;

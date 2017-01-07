@@ -7,7 +7,6 @@ import com.client.emindprint 1.0
 import "client.js" as Jsclient
 
 
-
 Window {
     objectName: "clientWin"
     id:clientWin
@@ -42,15 +41,22 @@ Window {
     }
 
 
+    ClientAssistant{
+        id:clientAssist
+        onSigConnected: {
+            clientWin.showPrinterWin();
+            clientWin.hide();
+        }
+    }
 
 
     EmindClient{
         id:client
 //        onRcvCupsFile:clientWin.visible = false;
-        onSigConnected: {
-            clientWin.showPrinterWin();
-            clientWin.hide();
-        }
+//        onSigConnected: {
+//            clientWin.showPrinterWin();
+//            clientWin.hide();
+//        }
         onSigAuthWrong:{
             errText2.color="red";
             errText2.visible = true;
@@ -169,7 +175,7 @@ Window {
         {
             btnNext.enabled = false;
 
-            client.checkConnectivity(fieldIP.text,fieldLicense.text);
+            clientAssist.checkConnectivity(fieldIP.text,fieldLicense.text);
             btnNext.enabled = true;
         }
     }

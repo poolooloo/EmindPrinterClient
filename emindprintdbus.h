@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QString>
+#include "client.h"
+
 namespace EPT {
 
 
@@ -17,6 +19,9 @@ signals:
 
 public slots:
     void add(const QString& file,const QString& title,bool autoRemove=false,const QString& options="");
+
+private:
+    Client* eclient;
 };
 
 

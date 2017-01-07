@@ -34,11 +34,9 @@ ClientPrive* ClientPrive::instance()
 }
 
 
-//static QTcpSocket* psocket = new QTcpSocket();
-//Client* Client::emClient = NULL;
-
 Client::Client(QObject *parent) : QObject(parent)
 {
+
     priver= ClientPrive::instance();
 
     psocket = new QTcpSocket();
@@ -58,8 +56,8 @@ Client::Client(QObject *parent) : QObject(parent)
 
 Client::~Client()
 {
-//    delete emClient;
 }
+
 
 
 Client* Client::instance()
@@ -86,23 +84,22 @@ void Client::checkConnectivity(QString ip,QString license)
     if (priver->autstr.isEmpty())
         priver->autstr = license;
 
-    psocket->abort();
+//    psocket->abort();
 
     qDebug()<<"ipstr111=="<<priver->serverIp;
     qDebug()<<"autstr22222=="<<priver->autstr;
     qint64 pid=app111->applicationPid();
     qDebug()<<"pid"<<pid<<endl;
     qDebug()<< __FUNCTION__ <<"this"<<this;
-    psocket->connectToHost(ip,SERVER_PORT);
-    //    tcpThread = new TcpThread(ip,license,this);
 
+    psocket->connectToHost(ip,SERVER_PORT);
     if(psocket->waitForConnected(1000))
-        //        sndReqLicense(license);
         sndMsg(license);
     if (psocket->waitForReadyRead())
         checkLicense();
 }
 
+//license checking process
 void Client::sndReqLicense(QString license)
 {
     QStringList printer_list;
@@ -220,18 +217,19 @@ void Client::setPnameStr(const QString str)
 
 void Client::sndMsg(QString msgStr)
 {
+    qDebug()<<__FUNCTION__<<endl;
     QByteArray authblock;
     QDataStream out(&authblock,QIODevice::WriteOnly);
     out << (quint16)0 << msgStr;
     out.device()->seek(0);
     out<<(quint16)(authblock.size() - sizeof(quint16));
     qDebug()<<"psocket="<<psocket<<endl;
+    qDebug()<<"psocket.state="<<psocket->state()<<endl;
     psocket->write(authblock);
-    //    qDebug() << "msgStr=" <<msgStr<< endl;
-    //    qDebug() << "authblock=" <<authblock<< endl;
     psocket->flush();
 }
 
+// Receive short messages : like protocol
 QString Client::rcvMsg()
 {
     QDataStream in(psocket);
@@ -327,7 +325,14 @@ void Client::updateClientProgress(qint64 numBytes) //更新进度条，实现文
         bytesWritten=0;
         totalBytes=0;
         localFile->close();
-        psocket->close();
+//        psocket->close();
+        psocket->disconnectFromHost();
+        if(psocket->state() == QAbstractSocket::UnconnectedState){
+            psocket->waitForDisconnected();
+            qDebug()<<"Disconnected"<<endl;
+        }else{
+            qDebug()<<"not sent files over"<<endl;
+        }
     }
 }
 
@@ -388,23 +393,18 @@ void Client::load(const QString &fileName,const QString &title,const QString &op
 
 void Client::loadCupsFiles(const QStringList& fileNames,const QStringList& titles,const QString& options,bool autoRemove)
 {
-    qDebug()<<__FUNCTION__<<endl;
-    emit rcvCupsFile();
+    qDebug()<<"psocket.state="<<psocket->state()<<endl;
+//    emit rcvCupsFile();
     // if(authflags==1)
     {
-        qDebug()<<"ipstr=="<<priver->serverIp;
-        qDebug()<<"autstr=="<<priver->autstr;
-
-        client->checkConnectivity(priver->serverIp,priver->autstr);
+        qDebug()<<__FUNCTION__<<"psocket="<<psocket<<endl;
+//        client->checkConnectivity(priver->serverIp,priver->autstr);
     }
-//    for(int i=0;i<fileNames.count();i++)
     foreach(QString fileName,fileNames)
     {
-//        sendFiles(fileNames.at(i));
         sendFiles(fileName);
         authflags = 1;
         qDebug()<<__FUNCTION__<<"fileName="<<fileName<<endl;
-        //  QMessageBox::information(0,"cups file rcv",tr("filename=%1").arg(fileName));
     }
 }
 

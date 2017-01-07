@@ -6,6 +6,8 @@
 #include <QtCore>
 #include <QHash>
 #include <QByteArray>
+namespace EPT {
+
 
 class PrinterListModelPrivate;
 class PrinterListModel : public QAbstractListModel
@@ -33,5 +35,6 @@ protected:
 private:
     PrinterListModelPrivate *m_dptr;
 };
+}
 
 #endif // PRINTERLISTMODEL_H

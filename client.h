@@ -6,12 +6,12 @@
 #include <QAbstractSocket>
 #include <QStringListModel>
 #include "tcpthread.h"
-
 class QFile;
 class QTcpSocket;
-class PrinterListModel;
+
 namespace EPT {
 
+class PrinterListModel;
 
 class ClientPrive;
 class Client : public QObject
@@ -29,6 +29,8 @@ public:
     ~Client();
 
     static Client* instance();
+
+
     ClientPrive* priver;
     enum ServerError{ IpError,LicenseError};
 
@@ -73,7 +75,8 @@ signals:
 public slots:
     void setDefaultPrinter(QString prName,quint32 pIndex);
     void getPrinterNameList(QString& msg);
-    Q_INVOKABLE void checkConnectivity(QString ip,QString license);
+//    Q_INVOKABLE void checkConnectivity(QString ip,QString license);
+    void checkConnectivity(QString ip,QString license);
     void checkLicense();
     void displayError(QAbstractSocket::SocketError);
     void updateClientProgress(qint64 numBytes);
@@ -82,8 +85,6 @@ public slots:
 
 private:
     QTcpSocket *psocket;
-//    Client(){}
-//    static Client* emClient;
 
     quint16 inDataSize;
 
@@ -105,10 +106,9 @@ private:
     QStringListModel m_pnamelistModel;
 
     PrinterListModel *printerModel;
- //    TcpThread *tcpThread;
     QString m_pnameStr;
-//    QString serverIp;
     quint16 printerNo;
+
 
 };
 

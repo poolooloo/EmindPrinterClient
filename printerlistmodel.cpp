@@ -1,4 +1,6 @@
 #include "printerlistmodel.h"
+namespace EPT {
+
 
 class PrinterListModelPrivate
 {
@@ -80,4 +82,7 @@ void PrinterListModel::remove(int index)
     beginRemoveRows(QModelIndex(),index,index);
     m_dptr->m_list.removeAt(index);
     endRemoveRows();
+}
+
+
 }

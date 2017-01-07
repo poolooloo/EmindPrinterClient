@@ -15,7 +15,9 @@ SOURCES += main.cpp \
     printer.cpp \
     emindprintdbus.cpp \
     printerlistmodel.cpp \
-    tcpthread.cpp
+    tcpthread.cpp \
+    clientassistant.cpp \
+    clienter.cpp
 
 lupdate_only{
 SOURCES = *.qml \
@@ -59,6 +61,8 @@ HEADERS += \
     tcpthread.h \
     protocol.h \
     debian/emindprinter.postinst \
-    debian/rules
+    debian/rules \
+    clientassistant.h \
+    clienter.h
 
 TARGET = emindprinter
