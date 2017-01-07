@@ -31,6 +31,10 @@
         <source></source>
         <translation></translation>
     </message>
+    <message>
+        <source>EmindCloudPrinter</source>
+        <translation>一铭云打印</translation>
+    </message>
 </context>
 <context>
     <name>PrinterList</name>

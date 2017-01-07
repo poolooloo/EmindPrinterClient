@@ -13,7 +13,7 @@ Window {
     id:clientWin
     width: 400
     height: 240
-    //    title: qsTr("Add Printer")
+    title: qsTr("EmindCloudPrinter")
     maximumHeight: 240
     minimumHeight: 240
     maximumWidth: 400

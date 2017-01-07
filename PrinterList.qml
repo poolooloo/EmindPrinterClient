@@ -9,10 +9,10 @@ import "client.js" as Jsclient
 Window {
     objectName: "printerWin"
     id:printerlist
-    maximumHeight: 400
-    minimumHeight: 400
-    maximumWidth: 500
-    minimumWidth: 500
+    maximumHeight: 500
+    minimumHeight: 500
+    maximumWidth: 600
+    minimumWidth: 600
     visible:false
 
     title:qsTr("Add Remote Printers")
@@ -52,7 +52,7 @@ Window {
         anchors.fill:parent
         model:pModel
         delegate:pDelegate
-//        anchors.margins: 15
+        anchors.margins: 15
 //        highlight: highlighter
 //        highlightFollowsCurrentItem: true
 //        focus:true
@@ -88,9 +88,9 @@ Window {
 
         Rectangle{
             id:printerItem
-            width:printerlist.width
+            width:parent.width
             height:60
-//            color:focus?"#f5f5f5":"white"
+
             Image{
                 id:pImg
                 height: 40
