@@ -12,7 +12,9 @@
 #include <QtQuick/QQuickItem>
 #include "emindprintdbus.h"
 #include "printerlistmodel.h"
+#include <QTranslator>
 
+#define TRANSLATIONS_DIR "/usr/local/share/emindprinter/translations"
 QGuiApplication *app111=NULL;
 
 
@@ -42,6 +44,11 @@ int main(int argc, char *argv[])
     readEnvFile();
     QGuiApplication app(argc, argv);
         app111 = &app;
+
+    //translations
+    QTranslator trans;
+    if(trans.load("translations/zh_CN.qm"))
+        app.installTranslator(&trans);
 
     //client register
     qmlRegisterType<Client>("com.client.emindprint",1,0,"EmindClient");

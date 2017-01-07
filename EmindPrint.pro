@@ -5,6 +5,9 @@ CONFIG += c++11
 
 LIBS += -lcups
 
+TRANSLATIONS += translations/zh_CN.ts
+
+
 SOURCES += main.cpp \
     licensefactory.cpp \
     client.cpp \
@@ -14,7 +17,13 @@ SOURCES += main.cpp \
     printerlistmodel.cpp \
     tcpthread.cpp
 
+lupdate_only{
+SOURCES = *.qml \
+          *.js
+}
+
 RESOURCES += qml.qrc
+
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -37,7 +46,8 @@ DISTFILES += \
     debian/emindprinter.install \
     debian/changelog \
     debian/README.Debian \
-    debian/README.source
+    debian/README.source \
+    img/printer.png
 
 HEADERS += \
     licensefactory.h \

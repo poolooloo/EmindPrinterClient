@@ -105,7 +105,6 @@ Window {
     }
 
 
-
     Button {
         objectName:"btnCancel"
         id: btnCancel1
@@ -117,6 +116,7 @@ Window {
             background: Rectangle{
                 radius: 5
                 border.color: "black"
+                color: (control.hovered || control.focus)? "blue":"white"
             }
         }
 
@@ -126,11 +126,14 @@ Window {
         {
             Qt.quit();
         }
-
-
-
+        Keys.onPressed: {
+            if(event.key === Qt.Key_Enter)
+                btnCancel1.clicked();
+        }
+        activeFocusOnPress:true
 
     }
+
 
 
     Button {
@@ -140,16 +143,27 @@ Window {
         y: 173
         width: 103
         height: 36
+//        activeFocusOnPress:true
+        KeyNavigation.tab: btnCancel1
+
+
         style: ButtonStyle {
             background: Rectangle{
                 radius: 5
                 border.color: "black"
+                color: (control.hovered || control.focus)? "blue":"white"
             }
+        }
+
+        Keys.onPressed: {
+            if(event.key === Qt.Key_Enter)
+                btnNext.clicked();
         }
 
         text: qsTr("Next")
 
         enabled: enableBtnNext(btnNext.Text.text)
+
 
         onClicked:
         {
@@ -167,6 +181,7 @@ Window {
             return false;
         }
     }
+
     Text {
         id: text1
         x: 62
@@ -248,6 +263,7 @@ Window {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         placeholderText: qsTr("")
+        KeyNavigation.tab: btnNext
 
     }
 

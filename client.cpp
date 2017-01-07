@@ -34,14 +34,14 @@ ClientPrive* ClientPrive::instance()
 }
 
 
-static QTcpSocket* psocket = new QTcpSocket();
+//static QTcpSocket* psocket = new QTcpSocket();
 //Client* Client::emClient = NULL;
 
 Client::Client(QObject *parent) : QObject(parent)
 {
     priver= ClientPrive::instance();
 
-//    psocket = new QTcpSocket();
+    psocket = new QTcpSocket();
 
     connect(psocket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(displayError(QAbstractSocket::SocketError)));
     //    connect(psocket,SIGNAL(readyRead()),this,SLOT(onReadyRead()));
@@ -61,10 +61,10 @@ Client::~Client()
 //    delete emClient;
 }
 
-static Client *inst = 0;
+
 Client* Client::instance()
 {
-
+    static Client *inst = 0;
     if(!inst)
         inst = new Client();
     return inst;
@@ -395,7 +395,7 @@ void Client::loadCupsFiles(const QStringList& fileNames,const QStringList& title
         qDebug()<<"ipstr=="<<priver->serverIp;
         qDebug()<<"autstr=="<<priver->autstr;
 
-//        Client::instance()->checkConnectivity(priver->serverIp,priver->autstr);
+        client->checkConnectivity(priver->serverIp,priver->autstr);
     }
 //    for(int i=0;i<fileNames.count();i++)
     foreach(QString fileName,fileNames)
@@ -412,9 +412,9 @@ void Client::loadCupsFiles(const QStringList& fileNames,const QStringList& title
 void Client::setDefaultPrinter(QString prName,quint32 pIndex)
 {
     //    qDebug()<<"pIndex="<<pIndex<<endl;
-    emit stopIndicator();  //stop qml indicator
-    sndMsg("DefaultPrinter");
-    sndMsg(QString::number(pIndex));
+//    emit stopIndicator();  //stop qml indicator
+//    sndMsg("DefaultPrinter");
+//    sndMsg(QString::number(pIndex));
     //    qDebug()<<"DefaultPrinter pIndex="<<pIndex<<endl;
     //    qDebug()<<prName<<endl;
     //    qDebug()<<__FUNCTION__<<endl;

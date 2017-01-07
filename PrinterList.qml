@@ -3,6 +3,7 @@ import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import com.client.emindprint 1.0
+import QtQuick.Layouts 1.1
 import "client.js" as Jsclient
 
 Window {
@@ -44,17 +45,6 @@ Window {
 
     ListModel{
         id:pModel
-
-//test element
-//        ListElement{
-//            prname:"nice"
-//        }
-//        ListElement{
-//            prname:"nice"
-//        }
-//        ListElement{
-//            prname:"nice"
-//        }
     }
 
     ListView{
@@ -62,26 +52,34 @@ Window {
         anchors.fill:parent
         model:pModel
         delegate:pDelegate
-        anchors.alignWhenCentered: true
-        anchors.margins: 10
-        highlight: highlighter
-
+//        anchors.margins: 15
+//        highlight: highlighter
+//        highlightFollowsCurrentItem: true
+//        focus:true
+        Layout.alignment: Qt.AlignCenter
+//        z:-1
     }
 
 
     Component{
         id:highlighter
         Rectangle{
-            width: printerlist.width
+            z:1
+            opacity: 0.8
+            width: pView.width
             height:60
-            MouseArea{
-                anchors.fill: parent
-                onHoveredChanged: parent.color = "#f5f5f5";
-            }
-
-
+            radius: 5
+//            MouseArea{
+//                hoverEnabled: true
+//                anchors.fill: parent
+//                onHoveredChanged: {
+//                    parent.color = "#f5f5f5";
+//                }
+//            }
+            color:"#f5f5f5"
         }
     }
+
 
 
 
@@ -92,22 +90,90 @@ Window {
             id:printerItem
             width:printerlist.width
             height:60
-            anchors.margins: 20
+//            color:focus?"#f5f5f5":"white"
+            Image{
+                id:pImg
+                height: 40
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                source:"img/printer.png"
+            }
+
             Text{
                 id:printerName
-                anchors.alignWhenCentered : true
                 text:prname
                 font.pixelSize: 18
+                anchors.left: parent.left
+                anchors.leftMargin: pImg.width
+                anchors.verticalCenter: parent.verticalCenter
             }
+
+            Component{
+                id:btnStyle1
+                ButtonStyle{
+                    background: Rectangle{
+                        width:control.width
+                        height:control.height
+                        color:"#f5f5f5"
+                    }
+                    label:Text{
+                        color:control.hovered?"blue":"black"
+//                        text:busyIndicator.running ? qsTr("") : qsTr("Add")
+                        text:qsTr("Add")
+                        font.pixelSize: 18
+                        anchors.fill: parent
+
+                    }
+                }
+            }
+
+            Component{
+                id:btnStyle2
+                ButtonStyle{
+                    background: Rectangle{
+                        width:control.width
+                        height:control.height
+                        color:"white"
+                    }
+                    label:Text{
+                        color:control.hovered?"blue":"black"
+//                        text:busyIndicator.running ? qsTr("") : qsTr("Add")
+                        text:qsTr("Add")
+                        font.pixelSize: 18
+                        anchors.fill: parent
+
+                    }
+                }
+            }
+
+
+            MouseArea{
+                hoverEnabled: true
+                anchors.fill: parent
+                onHoveredChanged: {
+
+                    pView.currentIndex = index;
+                }
+                onEntered: {
+
+                    printerItem.color = "#f5f5f5";
+                    btnAdd.style = btnStyle1;
+                }
+                onExited: {
+                    btnAdd.style = btnStyle2;
+                    printerItem.color = "white";
+                }
+            }
+
 
 
             Button{
                 id:btnAdd
                 width:40
                 height: 40
-                anchors.alignWhenCentered : true
                 anchors.right: printerItem.right
-                anchors.margins:20
+                anchors.verticalCenter: parent.verticalCenter
+//                anchors.margins:20
                 style:ButtonStyle{
                     background: Rectangle{
                         width:control.width
@@ -116,18 +182,22 @@ Window {
                     label:Text{
                         id:btnText
                         color:control.hovered?"blue":"black"
-                        text:busyIndicator.running ? "" : "Add"
-                        font.pixelSize: 22
+//                        text:busyIndicator.running ? qsTr("") : qsTr("Add")
+                        text:qsTr("Add")
+                        font.pixelSize: 18
+                        anchors.fill: parent
+//                        anchors.verticalCenter: btnAdd.verticalCenter
 //                        onHoveredLinkChanged:  color="blue"
                     }
                 }
                 onClicked: {
-                    busyIndicator.visible = true;
-                    busyIndicator.running = true;
+//                    busyIndicator.visible = true;
+//                    busyIndicator.running = true;
 //                    console.log("index=",index);
                       client.setDefaultPrinter(printerName.text,index);
 //                    busyIndicator.visible = false;
 //                    busyIndicator.running = false;
+//                    btnAdd.enabled = false;
                 }
 
                 BusyIndicator {

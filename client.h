@@ -81,7 +81,7 @@ public slots:
 
 
 private:
-//    static QTcpSocket *psocket;
+    QTcpSocket *psocket;
 //    Client(){}
 //    static Client* emClient;
 
