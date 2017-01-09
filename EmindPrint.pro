@@ -49,7 +49,9 @@ DISTFILES += \
     debian/changelog \
     debian/README.Debian \
     debian/README.source \
-    img/printer.png
+    img/printer.png \
+    translations/zh_CN.qm \
+    translations/zh_CN.ts
 
 HEADERS += \
     licensefactory.h \

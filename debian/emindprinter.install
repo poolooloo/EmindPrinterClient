@@ -11,4 +11,6 @@ org.emindprinter.service usr/share/dbus-1/services/
 #usr/share/icons/hicolor/64x64/apps/emindprinter.png
 #usr/share/man/man1/emindprinter.1.gz
 #usr/share/mime/packages/emindprinter.xml
-cups/emindprinter.ppd usr/share/ppd/emindprinter/
+cups/emindprinter.ppd  usr/share/ppd/emindprinter/
+translations/zh_CN.qm  usr/share/emindprinter/
+img/printer.png     /usr/share/emindprinter/

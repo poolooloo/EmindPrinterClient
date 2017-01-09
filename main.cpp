@@ -15,7 +15,8 @@
 #include <QTranslator>
 #include "clientassistant.h"
 
-#define TRANSLATIONS_DIR "/usr/local/share/emindprinter/translations"
+#define TRANSLATIONS_DIR "/usr/local/share/emindprinter/translations/"
+
 QGuiApplication *app111=NULL;
 
 
@@ -58,7 +59,7 @@ int main(int argc, char *argv[])
 
     //translations
     QTranslator trans;
-    if(trans.load("translations/zh_CN.qm"))
+    if(trans.load(TRANSLATIONS_DIR"zh_CN.qm"))
         app.installTranslator(&trans);
 
     QQmlApplicationEngine engine;
