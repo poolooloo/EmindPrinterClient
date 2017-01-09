@@ -194,7 +194,7 @@ Window {
 //                    busyIndicator.visible = true;
 //                    busyIndicator.running = true;
 //                    console.log("index=",index);
-                      client.setDefaultPrinter(printerName.text,index);
+                      clientAssist.setDefaultPrinter(printerName.text,index);
 //                    busyIndicator.visible = false;
 //                    busyIndicator.running = false;
 //                    btnAdd.enabled = false;

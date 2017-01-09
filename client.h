@@ -71,6 +71,7 @@ signals:
     void plistSent();
     void printerSetFinished();
     void stopIndicator();
+    void pnameStrSent(QString);
 
 public slots:
     void setDefaultPrinter(QString prName,quint32 pIndex);
@@ -81,6 +82,8 @@ public slots:
     void displayError(QAbstractSocket::SocketError);
     void updateClientProgress(qint64 numBytes);
     void onReadyRead();
+    void resumeConnect();
+
 
 
 private:

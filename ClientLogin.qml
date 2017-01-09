@@ -47,16 +47,6 @@ Window {
             clientWin.showPrinterWin();
             clientWin.hide();
         }
-    }
-
-
-    EmindClient{
-        id:client
-//        onRcvCupsFile:clientWin.visible = false;
-//        onSigConnected: {
-//            clientWin.showPrinterWin();
-//            clientWin.hide();
-//        }
         onSigAuthWrong:{
             errText2.color="red";
             errText2.visible = true;
@@ -68,37 +58,70 @@ Window {
             fieldIP.style=fieldStyleErr;
         }
         onPlistSent:{
-            Jsclient.g_str = client.pnameStr;
-            console.log(Jsclient.g_str);
+//            Jsclient.g_str = client.pnameStr;
+            Jsclient.g_str = clientAssist.pnameStr;
+            console.log("ClientLogin.qml:",Jsclient.g_str);
+//            console.log(Jsclient.g_str);
             pWin.showList();
         }
         onPrinterSetFinished:{
             pWin.stopSpinner();
         }
-        onStopIndicator:{
+//        onStopIndicator:{
+//            pWin.stopSpinner();
+//        }
+    }
+
+
+//    EmindClient{
+//        id:client
+//        onRcvCupsFile:clientWin.visible = false;
+//        onSigConnected: {
+//            clientWin.showPrinterWin();
+//            clientWin.hide();
+//        }
+//        onSigAuthWrong:{
+//            errText2.color="red";
+//            errText2.visible = true;
+//            fieldLicense.style = fieldStyleErr;
+//        }
+//        onSigConnectRefused: {
+//            errText1.visible = true;
+//            errText1.color="red";
+//            fieldIP.style=fieldStyleErr;
+//        }
+//        onPlistSent:{
+//            Jsclient.g_str = client.pnameStr;
+//            console.log(Jsclient.g_str);
+//            pWin.showList();
+//        }
+//        onPrinterSetFinished:{
+//            pWin.stopSpinner();
+//        }
+//        onStopIndicator:{
 //            console.log("stop indicator");
-            pWin.stopSpinner();
-        }
+//            pWin.stopSpinner();
+//        }
 
-    }
+//    }
 
-    Connections{
-        target:client
-        onSigConnected: {
-            clientWin.showPrinterWin();
-            clientWin.hide();
-        }
-        onSigAuthWrong:{
-            errText2.color="red";
-            errText2.visible = true;
-            fieldLicense.style = fieldStyleErr;
-        }
-        onSigConnectRefused: {
-            errText1.visible = true;
-            errText1.color="red";
-            fieldIP.style=fieldStyleErr;
-        }
-    }
+//    Connections{
+//        target:clientAssist
+//        onSigConnected: {
+//            clientWin.showPrinterWin();
+//            clientWin.hide();
+//        }
+//        onSigAuthWrong:{
+//            errText2.color="red";
+//            errText2.visible = true;
+//            fieldLicense.style = fieldStyleErr;
+//        }
+//        onSigConnectRefused: {
+//            errText1.visible = true;
+//            errText1.color="red";
+//            fieldIP.style=fieldStyleErr;
+//        }
+//    }
 
 
     Component {
@@ -137,7 +160,6 @@ Window {
                 btnCancel1.clicked();
         }
         activeFocusOnPress:true
-
     }
 
 

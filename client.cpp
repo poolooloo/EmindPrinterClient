@@ -44,6 +44,9 @@ Client::Client(QObject *parent) : QObject(parent)
     connect(psocket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(displayError(QAbstractSocket::SocketError)));
     //    connect(psocket,SIGNAL(readyRead()),this,SLOT(onReadyRead()));
     //connect(psocket,SIGNAL(readyRead()),this,SLOT(checkLicense()));
+    connect(psocket,SIGNAL(disconnected()),this,SLOT(resumeConnect()));
+    connect(psocket,SIGNAL(bytesWritten(qint64)),this,SLOT(updateClientProgress(qint64)));
+
 
     loadSize = 4*1024;
     totalBytes = 0;
@@ -97,6 +100,7 @@ void Client::checkConnectivity(QString ip,QString license)
         sndMsg(license);
     if (psocket->waitForReadyRead())
         checkLicense();
+
 }
 
 //license checking process
@@ -199,6 +203,7 @@ QString Client::pnameStr()
 void Client::setPnameStr(const QString str)
 {
     m_pnameStr = str;
+    emit pnameStrSent(m_pnameStr);
     emit pnameStrChanged();
 }
 
@@ -291,17 +296,16 @@ void Client::sendFiles(QString fileName)  //实现文件大小等信息的发送
     outBlock.resize(0);
     qDebug()<<"#####totalBytes"<<totalBytes;
 
-    connect(psocket,SIGNAL(bytesWritten(qint64)),this,SLOT(updateClientProgress(qint64)));
+//    connect(psocket,SIGNAL(bytesWritten(qint64)),this,SLOT(updateClientProgress(qint64)));
 
 }
 
 void Client::updateClientProgress(qint64 numBytes) //更新进度条，实现文件的传送
 {
-
     qDebug()<<"#######已发送："<<bytesWritten<<"剩余："<<bytesToWrite;
     bytesWritten += (int)numBytes;
     //已经发送数据的大小
-    if(bytesToWrite > 0) //如果已经发送了数据
+    while(bytesToWrite > 0) //如果已经发送了数据
     {
         qDebug()<<"bytesToWrite > 0"<<endl;
         //初始化时loadSize = 64*1024;qMin为返回参数中较小的值，每次最多发送64K的大小
@@ -309,15 +313,18 @@ void Client::updateClientProgress(qint64 numBytes) //更新进度条，实现文
         //每次发送loadSize大小的数据，这里设置为4KB，如果剩余的数据不足4KB，
         //就发送剩余数据的大小
         bytesToWrite -= (int)psocket->write(outBlock);
+//        psocket->flush();
         //发送完一次数据后还剩余数据的大小
         outBlock.resize(0);
         //清空发送缓冲区
+        qDebug()<<"bytesToWrite="<<bytesToWrite<<endl;
     }
-    else
-    {
-        qDebug()<<"bytesToWrite <0"<<endl;
-        localFile->close(); //如果没有发送任何数据，则关闭文件
-    }
+//    else
+//    {
+//        qDebug()<<"bytesToWrite <0"<<endl;
+//        localFile->close(); //如果没有发送任何数据，则关闭文件
+//    }
+
 
     if(bytesWritten == totalBytes) //发送完毕
     {
@@ -325,14 +332,14 @@ void Client::updateClientProgress(qint64 numBytes) //更新进度条，实现文
         bytesWritten=0;
         totalBytes=0;
         localFile->close();
-//        psocket->close();
-        psocket->disconnectFromHost();
-        if(psocket->state() == QAbstractSocket::UnconnectedState){
-            psocket->waitForDisconnected();
-            qDebug()<<"Disconnected"<<endl;
-        }else{
-            qDebug()<<"not sent files over"<<endl;
-        }
+        psocket->close();
+//        psocket->disconnectFromHost();
+//        if(psocket->state() == QAbstractSocket::UnconnectedState){
+//            psocket->waitForDisconnected();
+//            qDebug()<<"Disconnected"<<endl;
+//        }else{
+//            qDebug()<<"not sent files over"<<endl;
+//        }
     }
 }
 
@@ -397,8 +404,8 @@ void Client::loadCupsFiles(const QStringList& fileNames,const QStringList& title
 //    emit rcvCupsFile();
     // if(authflags==1)
     {
-        qDebug()<<__FUNCTION__<<"psocket="<<psocket<<endl;
-//        client->checkConnectivity(priver->serverIp,priver->autstr);
+//        if(psocket->state() == QAbstractSocket::UnconnectedState)
+//            client->checkConnectivity(priver->serverIp,priver->autstr);
     }
     foreach(QString fileName,fileNames)
     {
@@ -408,13 +415,19 @@ void Client::loadCupsFiles(const QStringList& fileNames,const QStringList& title
     }
 }
 
+void Client::resumeConnect()
+{
+    qApp->quit();
+//    if(psocket->state() == QAbstractSocket::UnconnectedState)
+        client->checkConnectivity(priver->serverIp,priver->autstr);
+}
 
 void Client::setDefaultPrinter(QString prName,quint32 pIndex)
 {
-    //    qDebug()<<"pIndex="<<pIndex<<endl;
+      qDebug()<<"pIndex="<<pIndex<<endl;
 //    emit stopIndicator();  //stop qml indicator
-//    sndMsg("DefaultPrinter");
-//    sndMsg(QString::number(pIndex));
+    sndMsg("DefaultPrinter");
+    sndMsg(QString::number(pIndex));
     //    qDebug()<<"DefaultPrinter pIndex="<<pIndex<<endl;
     //    qDebug()<<prName<<endl;
     //    qDebug()<<__FUNCTION__<<endl;
