@@ -15,7 +15,7 @@
 #include <QTranslator>
 #include "clientassistant.h"
 
-#define TRANSLATIONS_DIR "/usr/local/share/emindprinter/translations/"
+#define TRANSLATIONS_DIR "/usr/share/emindprinter/translations/"
 
 QGuiApplication *app111=NULL;
 
